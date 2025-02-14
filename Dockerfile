@@ -11,6 +11,9 @@ RUN go mod download
 # Копируем исходный код
 COPY . .
 
+# Запускаем тесты перед сборкой
+RUN go test ./...
+
 # Собираем бинарник
 RUN go build -o hotel-service main.go
 
