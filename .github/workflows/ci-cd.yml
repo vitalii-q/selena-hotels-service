@@ -30,7 +30,7 @@ jobs:
       - name: Build Docker image
         run: |
           docker build -t selena-hotel-service .
-      
+
       - name: Run tests (example, если у тебя есть тесты)
         run: |
           docker run selena-hotel-service echo "Container is running"
@@ -43,10 +43,20 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Install kubectl
+        run: |
+          # Устанавливаем kubectl
+          curl -LO https://dl.k8s.io/release/v1.23.0/bin/linux/amd64/kubectl
+          chmod +x ./kubectl
+          sudo mv ./kubectl /usr/local/bin/kubectl
+          
+          # Проверяем версию kubectl
+          kubectl version --client
+
       - name: Set up Kubernetes credentials
-        uses: kubernetes-actions/setup-kubectl@v2
-        with:
-          kubeconfig: ${{ secrets.KUBE_CONFIG }}
+        run: |
+          echo "${{ secrets.KUBE_CONFIG }}" > ~/.kube/config
+          kubectl config view --raw
 
       - name: Deploy to Kubernetes
         run: |
