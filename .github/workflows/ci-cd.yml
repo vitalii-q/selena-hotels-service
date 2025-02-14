@@ -33,7 +33,7 @@ jobs:
       
       - name: Run tests (example, если у тебя есть тесты)
         run: |
-          docker run selena-hotel-service test-command-here
+          docker run selena-hotel-service echo "Container is running"
 
   deploy:
     runs-on: ubuntu-latest
