@@ -44,7 +44,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Set up Kubernetes credentials
-        uses: azure/setup-kubernetes@v2
+        uses: azure/setup-kubernetes@v1
         with:
           kubeconfig: ${{ secrets.KUBE_CONFIG }}
 
