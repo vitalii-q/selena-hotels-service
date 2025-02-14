@@ -55,7 +55,9 @@ jobs:
 
       - name: Set up Kubernetes credentials
         run: |
+          mkdir -p ~/.kube/
           echo "${{ secrets.KUBE_CONFIG }}" > ~/.kube/config
+          export KUBECONFIG=~/.kube/config
           kubectl config view --raw
 
       - name: Deploy to Kubernetes
