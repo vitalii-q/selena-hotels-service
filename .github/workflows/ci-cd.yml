@@ -50,7 +50,7 @@ jobs:
       - name: Set up Kubeconfig
         run: |
           mkdir -p ~/.kube
-          echo "$K8S_TOKEN" | base64 -d > ~/.kube/config
+          echo "$K8S_TOKEN" > ~/.kube/config
         env:
           K8S_TOKEN: ${{ secrets.K8S_TOKEN }}
       
