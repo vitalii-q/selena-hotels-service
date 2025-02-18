@@ -47,12 +47,15 @@ jobs:
         run: |
           curl -sfL https://get.k3s.io | sh -
 
-      - name: Set up Kubeconfig
-        run: |
-          mkdir -p ~/.kube
-          echo "$KUBE_CONFIG" > ~/.kube/config
+      - name: Print KUBE_CONFIG
+        run: mkdir -p ~/.kube
+             echo "$KUBE_CONFIG" | head -n 10  # Выводит первые 10 строк kubeconfig для проверки
         env:
-          K8S_TOKEN: ${{ secrets.K8S_TOKEN }}
+          KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
+
+      - name: Test kubectl connection
+        run: |
+          kubectl get pods --all-namespaces
       
       - name: Verify kubectl is working
         run: |
