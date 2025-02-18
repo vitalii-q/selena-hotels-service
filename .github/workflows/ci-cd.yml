@@ -47,7 +47,7 @@ jobs:
         run: |
           curl -sfL https://get.k3s.io | sh -
 
-      - name: Set up Kubeconfig
+      - name: Set up Kubeconfig 1
         run: |
           mkdir -p ~/.kube
           echo "$KUBE_CONFIG" > ~/.kube/config
