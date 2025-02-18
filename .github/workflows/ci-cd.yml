@@ -53,6 +53,10 @@ jobs:
           echo "$KUBECONFIG" > ~/.kube/config
         env:
           K8S_TOKEN: ${{ secrets.K8S_TOKEN }}
+
+      - name: Show kubectl configuration
+        run: |
+          cat $HOME/.kube/config
       
       - name: Verify kubectl is working
         run: |
