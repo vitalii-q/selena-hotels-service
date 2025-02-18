@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: hotel-service
-          image: selena-hotel-service:latest
+          image: 1yogurt/selena-hotel-service:latest
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8080
