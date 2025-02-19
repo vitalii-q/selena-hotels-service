@@ -54,11 +54,23 @@ jobs:
         env:
           K8S_TOKEN: ${{ secrets.K8S_TOKEN }}
 
+      - name: Set up KUBECONFIG
+        run: |
+          echo "${{ secrets.KUBECONFIG }}" > kubeconfig.yaml
+          export KUBECONFIG=$(pwd)/kubeconfig.yaml
+          echo "KUBECONFIG=$(pwd)/kubeconfig.yaml" >> $GITHUB_ENV
+
       - name: Show kubectl configuration
         run: |
           cat $HOME/.kube/config
 
-      - name: Debug KUBECONFIG
+      - name: Check if KUBECONFIG exists
+        run: |
+          echo "KUBECONFIG path: $KUBECONFIG"
+          ls -la ~/.kube || echo "No ~/.kube directory"
+          ls -la $KUBECONFIG || echo "No KUBECONFIG file found"
+
+      - name: Debug KUBECONFIG #
         run: kubectl config view --minify --flatten
       
       - name: Verify kubectl is working
@@ -66,7 +78,7 @@ jobs:
           kubectl version --client
           kubectl --insecure-skip-tls-verify=true get nodes
 
-      - name: Test kubectl connection
+      - name: Test kubectl connection #
         run: |
           kubectl cluster-info
           echo "$KUBECONFIG"
