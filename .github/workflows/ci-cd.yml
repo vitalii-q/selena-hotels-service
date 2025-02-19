@@ -57,6 +57,9 @@ jobs:
       - name: Show kubectl configuration
         run: |
           cat $HOME/.kube/config
+
+      - name: Debug KUBECONFIG
+        run: kubectl config view --minify --flatten
       
       - name: Verify kubectl is working
         run: |
