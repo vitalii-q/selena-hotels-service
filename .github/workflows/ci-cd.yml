@@ -31,7 +31,7 @@ jobs:
         run: |
           docker build -t selena-hotel-service .
 
-      - name: Run tests (example, если у тебя есть тесты)
+      - name: Run tests (если у тебя есть тесты)
         run: |
           docker run selena-hotel-service echo "Container is running"
 
@@ -43,49 +43,27 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Install K3s
-        run: |
-          curl -sfL https://get.k3s.io | sh -
-
-      - name: Set up Kubeconfig
-        run: |
-          mkdir -p ~/.kube
-          echo "$KUBECONFIG" > ~/.kube/config
-        env:
-          K8S_TOKEN: ${{ secrets.K8S_TOKEN }}
-
       - name: Set up KUBECONFIG
         run: |
-          echo "${{ secrets.KUBECONFIG }}" > kubeconfig.yaml
-          export KUBECONFIG=$(pwd)/kubeconfig.yaml
-          echo "KUBECONFIG=$(pwd)/kubeconfig.yaml" >> $GITHUB_ENV
+          mkdir -p ~/.kube
+          echo "${{ secrets.KUBECONFIG }}" > ~/.kube/config
+          chmod 600 ~/.kube/config
+          export KUBECONFIG=~/.kube/config
+          echo "KUBECONFIG=$KUBECONFIG" >> $GITHUB_ENV
 
-      - name: Show kubectl configuration
+      - name: Debug KUBECONFIG
         run: |
-          cat $HOME/.kube/config
+          echo "Using KUBECONFIG at $KUBECONFIG"
+          ls -la ~/.kube
+          cat ~/.kube/config || echo "No kubeconfig found"
+          kubectl config view --minify --flatten
 
-      - name: Check if KUBECONFIG exists
-        run: |
-          echo "KUBECONFIG path: $KUBECONFIG"
-          ls -la ~/.kube || echo "No ~/.kube directory"
-          ls -la $KUBECONFIG || echo "No KUBECONFIG file found"
-
-      - name: Debug KUBECONFIG #
-        run: kubectl config view --minify --flatten
-      
-      - name: Verify kubectl is working
+      - name: Verify kubectl connection
         run: |
           kubectl version --client
           kubectl --insecure-skip-tls-verify=true get nodes
 
-      - name: Test kubectl connection #
-        run: |
-          kubectl cluster-info
-          echo "$KUBECONFIG"
-          echo "---"
-          echo ${{ secrets.KUBECONFIG }}
-
-      - name: Deploy to K3s
+      - name: Deploy to Kubernetes
         run: |
           kubectl apply -f k8s/deployment.yaml
           kubectl apply -f k8s/service.yaml
