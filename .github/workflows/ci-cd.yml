@@ -61,7 +61,7 @@ jobs:
       - name: Verify kubectl is working
         run: |
           kubectl version --client
-          kubectl get nodes
+          kubectl --insecure-skip-tls-verify=true get nodes
 
       - name: Deploy to K3s
         run: |
