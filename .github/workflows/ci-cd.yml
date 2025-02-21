@@ -43,49 +43,27 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Set up KUBECONFIG
+      - name: Set up ngrok
         run: |
-          mkdir -p ~/.kube
-          echo "${{ secrets.KUBECONFIG }}" > ~/.kube/config
-          chmod 600 ~/.kube/config
-          export KUBECONFIG=~/.kube/config
-          echo "KUBECONFIG=$KUBECONFIG" >> $GITHUB_ENV
+          echo "Setting up ngrok..."
+          ./ngrok http 9084
 
-      - name: Debug KUBECONFIG
+      # Шаг с SSH-подключением и развертыванием Docker
+      - name: SSH setup and deploy to Selena-prod folder 
         run: |
-          echo "Using KUBECONFIG at $KUBECONFIG"
-          ls -la ~/.kube
-          cat ~/.kube/config || echo "No kubeconfig found"
-          kubectl config view --minify --flatten
+          echo "Setting up SSH and deploying to Selena-prod folder"
 
-      - name: Set up SSH
-        run: |
+          # Устанавливаем SSH-ключ
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
           ssh-keyscan github.com >> ~/.ssh/known_hosts
-          # Ensure that the SSH private key is added to the SSH agent
-          eval $(ssh-agent -s)
-          ssh-add ~/.ssh/id_ed25519
-
-      - name: Verify kubectl connection
-        run: |
-          kubectl version --client
-          kubectl --insecure-skip-tls-verify=true get nodes
-
-      - name: Deploy to Kubernetes
-        run: |
-          kubectl apply -f k8s/deployment.yaml
-          kubectl apply -f k8s/service.yaml
-          kubectl apply -f k8s/ingress.yaml
-
-      # Add this step to push changes back to your repository
-      - name: Push changes to remote repository
-        run: |
-          git config user.name "Vitalii Smyrnov"
-          git config user.email "vitalicheg28@mail.ru"
-          git add .
-          git commit -m "Automated commit after deploy"
-          git push origin main
+          
+          # Подключаемся к серверу и выполняем команды для pull и запуска Docker
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_ed25519 GitHubActions@172.17.0.98 "
+          cd /opt/homebrew/var/www/_projects/Selena-prod/hotel-service && 
+          git pull origin main && 
+          cd /opt/homebrew/var/www/_projects/Selena-prod && 
+          docker-compose -f docker-compose.yml up -d"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
