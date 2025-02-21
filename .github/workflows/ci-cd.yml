@@ -78,3 +78,14 @@ jobs:
           kubectl apply -f k8s/deployment.yaml
           kubectl apply -f k8s/service.yaml
           kubectl apply -f k8s/ingress.yaml
+
+      # Add this step to push changes back to your repository
+      - name: Push changes to remote repository
+        run: |
+          git config user.name "Vitalii Smyrnov"
+          git config user.email "vitalicheg28@mail.ru"
+          git add .
+          git commit -m "Automated commit after deploy"
+          git push origin main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
