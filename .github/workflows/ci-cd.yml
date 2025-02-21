@@ -43,11 +43,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Set up ngrok
-        run: |
-          echo "Setting up ngrok..."
-          ./ngrok http 9084
-
       # Шаг с SSH-подключением и развертыванием Docker
       - name: SSH setup and deploy to Selena-prod folder 
         run: |
