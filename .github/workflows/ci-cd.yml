@@ -10,11 +10,13 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+        with:
+          path: /opt/homebrew/var/www/_projects/Selena-prod/hotel-service  # Указываем путь
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
@@ -29,36 +31,19 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t selena-hotel-service .
+          cd /opt/homebrew/var/www/_projects/Selena-prod/hotel-service
+          docker build -t ${{ secrets.IMAGE_NAME }} .
 
       - name: Run tests (если у тебя есть тесты)
         run: |
-          docker run selena-hotel-service echo "Container is running"
+          docker run ${{ secrets.IMAGE_NAME }} echo "Container is running"
 
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: build
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      # Шаг с SSH-подключением и развертыванием Docker
-      - name: SSH setup and deploy to Selena-prod folder 
+      - name: Deploy application
         run: |
-          echo "Setting up SSH and deploying to Selena-prod folder"
-
-          # Устанавливаем SSH-ключ
-          mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
-          chmod 600 ~/.ssh/id_ed25519
-          ssh-keyscan github.com >> ~/.ssh/known_hosts
-          
-          # Подключаемся к серверу и выполняем команды для pull и запуска Docker
-          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_ed25519 GitHubActions@172.17.0.98 "
-          cd /opt/homebrew/var/www/_projects/Selena-prod/hotel-service && 
-          git pull origin main && 
-          cd /opt/homebrew/var/www/_projects/Selena-prod && 
-          docker-compose -f docker-compose.yml up -d"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          cd /opt/homebrew/var/www/_projects/Selena-prod
+          docker-compose -f docker-compose.yml up -d --build
