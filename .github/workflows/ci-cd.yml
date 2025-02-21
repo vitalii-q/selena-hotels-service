@@ -64,6 +64,9 @@ jobs:
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
           ssh-keyscan github.com >> ~/.ssh/known_hosts
+          # Ensure that the SSH private key is added to the SSH agent
+          eval $(ssh-agent -s)
+          ssh-add ~/.ssh/id_ed25519
 
       - name: Verify kubectl connection
         run: |
