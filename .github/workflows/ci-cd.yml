@@ -43,6 +43,10 @@ jobs:
     needs: build
 
     steps:
+      - name: Remove existing containers
+        run: |
+          docker-compose -f docker-compose.yml down
+
       - name: Deploy application
         run: |
           cd selena-prod
