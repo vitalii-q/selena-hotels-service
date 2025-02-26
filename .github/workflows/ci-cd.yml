@@ -16,7 +16,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
         with:
-          path: /opt/homebrew/var/www/_projects/Selena-prod/hotel-service  # Указываем путь
+          path: selena-prod/hotel-service  # Путь через символическую ссылку
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
@@ -31,7 +31,7 @@ jobs:
 
       - name: Build Docker image
         run: |
-          cd /opt/homebrew/var/www/_projects/Selena-prod/hotel-service
+          cd selena-prod/hotel-service
           docker build -t ${{ secrets.IMAGE_NAME }} .
 
       - name: Run tests (если у тебя есть тесты)
@@ -45,5 +45,5 @@ jobs:
     steps:
       - name: Deploy application
         run: |
-          cd /opt/homebrew/var/www/_projects/Selena-prod
+          cd selena-prod
           docker-compose -f docker-compose.yml up -d --build
