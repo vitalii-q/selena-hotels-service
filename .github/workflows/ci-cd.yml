@@ -46,4 +46,4 @@ jobs:
       - name: Deploy application
         run: |
           cd selena-prod
-          docker-compose -f docker-compose.yml up -d --build
+          docker-compose --env-file hotel-service/.env -f docker-compose.yml up -d --build
