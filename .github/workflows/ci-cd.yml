@@ -14,9 +14,14 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
-        with:
-          path: selena-prod/hotel-service  # Путь через символическую ссылку
+        run: |
+          if [ ! -d "selena-prod/hotel-service/.git" ]; then
+            echo "Cloning the repository..."
+            git clone git clone https://github.com/vitalii-q/selena-hotel-service selena-prod/hotel-service
+          else
+            echo "Repository already exists. Pulling the latest changes..."
+            cd selena-prod/hotel-service && git pull
+          fi
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
