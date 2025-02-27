@@ -56,5 +56,6 @@ jobs:
       - name: Deploy application
         run: |
           cd selena-prod
+          ls -la
           docker-compose build hotel-service
           docker-compose up -d hotel-service
