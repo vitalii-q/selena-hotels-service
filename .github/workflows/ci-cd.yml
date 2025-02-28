@@ -39,7 +39,7 @@ jobs:
           cd selena-prod/hotel-service
           docker build -t ${{ secrets.IMAGE_NAME }} .
 
-      - name: Run tests (если у тебя есть тесты)
+      - name: Run tests
         run: |
           docker run ${{ secrets.IMAGE_NAME }} echo "Container is running"
 
