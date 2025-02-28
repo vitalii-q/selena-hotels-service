@@ -12,6 +12,10 @@ jobs:
   build:
     runs-on: self-hosted
 
+    permissions:
+      packages: write   # Это разрешение для записи в пакеты (GHCR)
+      contents: read    # Это разрешение для чтения содержимого репозитория
+
     steps:
       - name: Checkout code
         run: |
