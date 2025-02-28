@@ -43,6 +43,19 @@ jobs:
         run: |
           docker run ${{ secrets.IMAGE_NAME }} echo "Container is running"
 
+      # GitHub Container Registry
+      - name: Log in to GitHub Container Registry
+        run: echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Build Docker image
+        run: |
+          cd selena-prod/hotel-service
+          docker build -t ghcr.io/${{ github.vitalii-q }}/hotel-service:latest .
+          
+      - name: Push Docker image to GHCR
+        run: |
+          docker push ghcr.io/${{ github.vitalii-q }}/hotel-service:latest
+
   deploy:
     runs-on: self-hosted
     needs: build
@@ -56,6 +69,5 @@ jobs:
       - name: Deploy application
         run: |
           cd selena-prod
-          ls -la
-          docker-compose build hotel-service
+          docker-compose pull hotel-service
           docker-compose up -d hotel-service
