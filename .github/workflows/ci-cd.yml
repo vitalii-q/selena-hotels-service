@@ -37,20 +37,15 @@ jobs:
           key: ${{ runner.os }}-buildx-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-buildx-
-
-      - name: Build Docker image
-        run: |
-          cd selena-prod/hotels-service
-          docker build -t ${{ secrets.IMAGE_NAME }} .
-
-      - name: Run tests
-        run: |
-          docker run --rm ${{ secrets.IMAGE_NAME }} echo "Container is running"
-
+              
       - name: Build Docker image
         run: |
           cd selena-prod/hotels-service
           docker build -t ghcr.io/${{ github.repository_owner }}/hotels-service:latest .
+
+      - name: Run tests
+        run: |
+          docker run --rm ${{ secrets.IMAGE_NAME }} echo "Container is running"
 
       # GitHub Container Registry
       - name: Log in to GitHub Container Registry
@@ -96,5 +91,5 @@ jobs:
         run: |
           cd selena-prod
           echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-          docker-compose pull
-          docker-compose up -d
+          docker-compose pull hotels-service
+          docker-compose up -d hotels-service
