@@ -19,12 +19,12 @@ jobs:
     steps:
       - name: Checkout code
         run: |
-          if [ ! -d "selena-prod/hotel-service/.git" ]; then
+          if [ ! -d "selena-prod/hotels-service/.git" ]; then
             echo "Cloning the repository..."
-            git clone git clone https://github.com/vitalii-q/selena-hotel-service selena-prod/hotel-service
+            git clone git clone https://github.com/vitalii-q/selena-hotels-service selena-prod/hotels-service
           else
             echo "Repository already exists. Pulling the latest changes..."
-            cd selena-prod/hotel-service && git pull
+            cd selena-prod/hotels-service && git pull
           fi
 
       - name: Set up Docker Buildx
@@ -40,7 +40,7 @@ jobs:
 
       - name: Build Docker image
         run: |
-          cd selena-prod/hotel-service
+          cd selena-prod/hotels-service
           docker build -t ${{ secrets.IMAGE_NAME }} .
 
       - name: Run tests
@@ -49,8 +49,8 @@ jobs:
 
       - name: Build Docker image
         run: |
-          cd selena-prod/hotel-service
-          docker build -t ghcr.io/${{ github.repository_owner }}/hotel-service:latest .
+          cd selena-prod/hotels-service
+          docker build -t ghcr.io/${{ github.repository_owner }}/hotels-service:latest .
 
       # GitHub Container Registry
       - name: Log in to GitHub Container Registry
@@ -59,13 +59,19 @@ jobs:
           
       - name: Push Docker image to GHCR
         run: |
-          docker push ghcr.io/${{ github.repository_owner }}/selena-hotel-service/hotel-service:latest
+          docker push ghcr.io/${{ github.repository_owner }}/selena-hotels-service/hotels-service:latest
 
   deploy:
     runs-on: self-hosted
     needs: build
 
     steps:
+      - name: Pull latest changes from selena-devops
+        run: |
+          git clone git@github.com:vitalii-q/selena-devops.git
+          cd selena-devops
+          git pull origin main
+
       - name: Remove existing containers
         run: |
           cd selena-prod
@@ -74,5 +80,5 @@ jobs:
       - name: Deploy application
         run: |
           cd selena-prod
-          docker-compose pull hotel-service
-          docker-compose up -d hotel-service
+          docker-compose pull hotels-service
+          docker-compose up -d hotels-service

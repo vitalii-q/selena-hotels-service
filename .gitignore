@@ -41,3 +41,6 @@ vendor/
 
 # Docker
 docker-compose.override.yml
+
+# Игнорировать кэшированные зависимости Go
+/pkg/mod/
