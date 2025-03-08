@@ -45,7 +45,7 @@ jobs:
 
       - name: Run tests
         run: |
-          docker run ${{ secrets.IMAGE_NAME }} echo "Container is running"
+          docker run --rm ${{ secrets.IMAGE_NAME }} echo "Container is running"
 
       - name: Build Docker image
         run: |
