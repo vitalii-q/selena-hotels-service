@@ -80,5 +80,6 @@ jobs:
       - name: Deploy application
         run: |
           cd selena-prod
+          echo ${{ secrets.GHCR_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
           docker-compose pull hotels-service
           docker-compose up -d hotels-service
