@@ -91,5 +91,5 @@ jobs:
         run: |
           cd selena-prod
           echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-          docker-compose pull hotels-service
+          docker-compose pull hotels-service # без указания hotels-service пулит все контейнеры
           docker-compose up -d hotels-service
