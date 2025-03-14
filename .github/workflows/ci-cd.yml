@@ -41,7 +41,7 @@ jobs:
       - name: Build Docker image
         run: |
           cd selena-prod/hotels-service
-          docker build -t ghcr.io/${{ github.repository_owner }}/hotels-service:latest .
+          docker build -t ghcr.io/${{ github.repository_owner }}/selena/hotels-service:latest .
 
       - name: Run tests
         run: |
@@ -54,7 +54,7 @@ jobs:
           
       - name: Push Docker image to GHCR
         run: |
-          docker push ghcr.io/${{ github.repository_owner }}/selena-hotels-service/hotels-service:latest
+          docker push ghcr.io/${{ github.repository_owner }}/selena/hotels-service:latest
 
   deploy:
     runs-on: self-hosted
