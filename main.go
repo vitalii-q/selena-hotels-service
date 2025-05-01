@@ -23,7 +23,8 @@ func main() {
 		c.String(http.StatusOK, "Hello, world!")
 	})
 
-	//logrus.Debugf("sfds")
+	logrus.Error("ests")
+	//logrus.DeferExitHandler("sfds")
 	//logrus.DebugFn("Hotel service started")
 
 	// Настроим сервер на прослушивание порта 8080
