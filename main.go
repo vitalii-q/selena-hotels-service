@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	//"github.com/sirupsen/logrus"
+	"github.com/sirupsen/logrus"
 )
 
 func main() {
@@ -23,7 +23,7 @@ func main() {
 		c.String(http.StatusOK, "Hello, world!")
 	})
 
-	//logrus.Error("ests")
+	logrus.Error("ests")
 	//logrus.Debug("sfds")
 	//logrus.Debug("Hotel service started")
 
