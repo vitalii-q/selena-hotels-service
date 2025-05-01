@@ -23,7 +23,8 @@ func main() {
 		c.String(http.StatusOK, "Hello, world!")
 	})
 
-	logrus.Debug("Hotel service started")
+	//logrus.DebugFn()
+	//logrus.DebugFn("Hotel service started")
 
 	// Настроим сервер на прослушивание порта 8080
 	if err := r.Run(":9064"); err != nil {
