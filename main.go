@@ -24,8 +24,8 @@ func main() {
 	})
 
 	logrus.Error("ests")
-	//logrus.DeferExitHandler("sfds")
-	//logrus.DebugFn("Hotel service started")
+	logrus.Debug("sfds")
+	logrus.Debug("Hotel service started")
 
 	// Настроим сервер на прослушивание порта 8080
 	if err := r.Run(":9064"); err != nil {
