@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	//"github.com/sirupsen/logrus"
+	"github.com/sirupsen/logrus"
 )
 
 func main() {
@@ -23,7 +23,7 @@ func main() {
 		c.String(http.StatusOK, "Hello, world!")
 	})
 
-	//logrus.Info("Hotel service started")
+	logrus.Debug("Hotel service started")
 
 	// Настроим сервер на прослушивание порта 8080
 	if err := r.Run(":9064"); err != nil {
