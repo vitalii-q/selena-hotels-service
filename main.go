@@ -2,10 +2,12 @@ package main
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	_ "github.com/lib/pq" // регистрация импорта для побочных эффектов
 	//"github.com/sirupsen/logrus"
 )
 

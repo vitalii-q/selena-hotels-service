@@ -1,0 +1,10 @@
+root = "."
+tmp_dir = "tmp"
+
+[build]
+  cmd = "go build -o ./tmp/hotel-service main.go"
+  bin = "./tmp/hotel-service"
+  include_ext = ["go"]
+  exclude_dir = ["vendor", "tmp"]
+  delay = 1000
+  stop_on_error = true

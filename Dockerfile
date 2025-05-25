@@ -1,24 +1,26 @@
 # Stage 1: Build the Go binary
-FROM golang:1.23.6-alpine AS builder
+FROM golang:1.23.6 as builder
 
 WORKDIR /app
 
 COPY go.mod go.sum ./
 RUN go mod download
 
+RUN go install github.com/air-verse/air@latest
+
 COPY . .
 
 #RUN go test ./...
 
-RUN go build -o hotel-service main.go
+RUN go build -o hotels-service main.go
 
-# Stage 2: Runtime image based on Debian slim (glibc included)
-FROM debian:bullseye-slim
+# Stage 2: Runtime 
+FROM golang:1.23.6
 
-WORKDIR /root/
+WORKDIR /app
 
 # Устанавливаем curl и netcat (nc), необходимые для скрипта ожидания и загрузки cockroach cli
-RUN apt-get update && apt-get install -y curl netcat ca-certificates \
+RUN apt-get update && apt-get install -y curl netcat-openbsd ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
 # Установка cockroach CLI
@@ -27,13 +29,11 @@ RUN curl -s https://binaries.cockroachdb.com/cockroach-v22.2.7.linux-amd64.tgz |
     && chmod +x /usr/local/bin/cockroach \
     && rm -rf cockroach-v22.2.7.linux-amd64*
 
-# Копируем бинарник приложения
-COPY --from=builder /app/hotel-service .
+# Копируем скомпилированное приложение и air
+COPY --from=builder /app .
+#COPY --from=builder /app/hotels-service /usr/local/bin/hotels-service # 
+COPY --from=builder /go/bin/air /usr/local/bin/air
 
-# Копируем скрипт ожидания базы и даём права на исполнение
-COPY _docker/entrypoint.sh ./entrypoint.sh
-RUN chmod +x ./entrypoint.sh
+EXPOSE ${HOTELS_SERVICE_PORT}
 
-EXPOSE 9064
-
-ENTRYPOINT ["./entrypoint.sh"]
+ENTRYPOINT ["./_docker/entrypoint.sh"]
