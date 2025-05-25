@@ -37,7 +37,7 @@ func main() {
 
     // Подключение к БД
 	var err error
-	connStr := "postgresql://hotels_user:hotels_pass@hotels-db:26257/hotels?sslmode=disable"
+	connStr := "postgresql://hotels_user:hotels_pass@hotels_db:26257/hotels?sslmode=disable"
 	db, err = sql.Open("postgres", connStr)
 	if err != nil {
 		log.Fatalf("Cannot connect to DB: %v", err)
