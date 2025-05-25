@@ -7,6 +7,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq" // регистрация импорта для побочных эффектов
+	"github.com/vitali-q/hotels-service/internal/handlers"
 	//"github.com/sirupsen/logrus"
 )
 
@@ -56,6 +57,8 @@ func main() {
 	//logrus.Error("ests")
 	//logrus.Debug("sfds")
 	//logrus.Debug("Hotel service started")
+
+	handlers.RegisterHotelRoutes(r)
 
 	// Настроим сервер на прослушивание порта 8080
 	if err := r.Run(":9064"); err != nil {
