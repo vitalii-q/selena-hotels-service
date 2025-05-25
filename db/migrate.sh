@@ -4,7 +4,7 @@ set -e
 
 DB_HOST="localhost"
 DB_PORT="9264"
-DB_USER="root"
+DB_USER="hotels_user"
 DB_NAME="hotels_db"
 MIGRATIONS_DIR="db/migrations"
 
