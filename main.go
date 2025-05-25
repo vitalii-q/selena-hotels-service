@@ -7,7 +7,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq" // регистрация импорта для побочных эффектов
-	"github.com/sirupsen/logrus"
+	//"github.com/sirupsen/logrus"
 )
 
 var db *sql.DB
@@ -15,6 +15,11 @@ var db *sql.DB
 func main() {
 	// Создаем новый экземпляр Gin
 	r := gin.Default()
+
+	//logrus.SetLevel(logrus.DebugLevel)           // Установка уровня логирования
+	//logrus.SetFormatter(&logrus.TextFormatter{ 
+	//	FullTimestamp: true,                     // Красивый вывод логов
+	//})
 
 	// Пример маршрута для API
 	r.GET("/health", func(c *gin.Context) {
@@ -27,7 +32,7 @@ func main() {
 		c.String(http.StatusOK, "Hello, world!")
 	})
 
-	logrus.Debug("qwer1")
+	//logrus.Debug("qwer1")
 
     // Подключение к БД
 	var err error
@@ -37,9 +42,9 @@ func main() {
 		log.Fatalf("Cannot connect to DB: %v", err)
 	}
 
-	logrus.Debug("qwer2")
-
 	r.GET("/health/db", func(c *gin.Context) {
+		//logrus.Warn("qwer23")
+
 		if err := db.Ping(); err != nil {
 			log.Printf("DB Ping error: %v", err)
 			c.JSON(http.StatusServiceUnavailable, gin.H{"error": "Database connection failed"})
