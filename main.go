@@ -2,13 +2,12 @@ package main
 
 import (
 	"database/sql"
-	"fmt"
 	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq" // регистрация импорта для побочных эффектов
-	//"github.com/sirupsen/logrus"
+	"github.com/sirupsen/logrus"
 )
 
 var db *sql.DB
@@ -28,15 +27,26 @@ func main() {
 		c.String(http.StatusOK, "Hello, world!")
 	})
 
-	var err error
-    // Подключение к БД (пример)
-    connStr := "postgresql://user:password@hotels-db:26257/hotels?sslmode=disable"
-    db, err = sql.Open("postgres", connStr)
-    if err != nil {
-        log.Fatalf("Cannot connect to DB: %v", err)
-    }
+	logrus.Debug("qwer1")
 
-	http.HandleFunc("/health/db", dbHealthCheckHandler)
+    // Подключение к БД
+	var err error
+	connStr := "postgresql://hotels_user:hotels_pass@hotels-db:26257/hotels?sslmode=disable"
+	db, err = sql.Open("postgres", connStr)
+	if err != nil {
+		log.Fatalf("Cannot connect to DB: %v", err)
+	}
+
+	logrus.Debug("qwer2")
+
+	r.GET("/health/db", func(c *gin.Context) {
+		if err := db.Ping(); err != nil {
+			log.Printf("DB Ping error: %v", err)
+			c.JSON(http.StatusServiceUnavailable, gin.H{"error": "Database connection failed"})
+			return
+		}
+		c.String(http.StatusOK, "Database connection OK")
+	})
 
 	//logrus.Error("ests")
 	//logrus.Debug("sfds")
@@ -46,13 +56,4 @@ func main() {
 	if err := r.Run(":9064"); err != nil {
 		log.Fatal("Error starting server: ", err)
 	}
-}
-
-func dbHealthCheckHandler(w http.ResponseWriter, r *http.Request) {
-    err := db.Ping()
-    if err != nil {
-        http.Error(w, "Database connection failed", http.StatusServiceUnavailable)
-        return
-    }
-    fmt.Fprintln(w, "Database connection OK")
 }

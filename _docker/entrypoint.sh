@@ -50,5 +50,5 @@ else
 fi
 
 # Запуск основного приложения
-echo "🚀 Starting hotel-service..."
+echo "🚀 Starting hotels-service..."
 exec air -c .air.toml

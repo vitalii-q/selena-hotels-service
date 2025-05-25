@@ -1,1 +1,1 @@
-# selena-hotel-service
+# selena-hotels-service

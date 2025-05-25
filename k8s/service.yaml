@@ -1,11 +1,11 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: hotel-service
+  name: hotels-service
 spec:
   type: NodePort  # Здесь меняем на NodePort
   selector:
-    app: hotel-service
+    app: hotels-service
   ports:
     - protocol: TCP
       port: 9064  # Порт внутри кластера
