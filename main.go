@@ -1,17 +1,29 @@
 package main
 
 import (
-	"database/sql"
 	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq" // регистрация импорта для побочных эффектов
+	"github.com/vitali-q/hotels-service/internal/database"
 	"github.com/vitali-q/hotels-service/internal/handlers"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 	//"github.com/sirupsen/logrus"
 )
 
-var db *sql.DB
+var DB *gorm.DB
+
+func InitDB() error {
+    dsn := "host=hotels-db user=hotels_user password=hotels_pass dbname=hotels port=26257 sslmode=disable"
+    db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+    if err != nil {
+        return err
+    }
+    DB = db
+    return nil
+}
 
 func main() {
 	// Создаем новый экземпляр Gin
@@ -22,33 +34,27 @@ func main() {
 	//	FullTimestamp: true,                     // Красивый вывод логов
 	//})
 
-	// Пример маршрута для API
-	r.GET("/health", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"status": "Hotel Service is running",
-		})
-	})
-
 	r.GET("/", func(c *gin.Context) {
 		c.String(http.StatusOK, "Hello, world!")
 	})
 
-	//logrus.Debug("qwer1")
-
-    // Подключение к БД
-	var err error
-	connStr := "postgresql://hotels_user:hotels_pass@hotels-db:26257/hotels?sslmode=disable"
-	db, err = sql.Open("postgres", connStr)
-	if err != nil {
-		log.Fatalf("Cannot connect to DB: %v", err)
+	// Инициализация базы данных через GORM
+	if err := database.Init(); err != nil {
+		log.Fatalf("Failed to connect to DB: %v", err)
 	}
 
-	r.GET("/health/db", func(c *gin.Context) {
-		//logrus.Warn("qwer23")
+	//logrus.Debug("qwer1")
 
-		if err := db.Ping(); err != nil {
-			log.Printf("DB Ping error: %v", err)
-			c.JSON(http.StatusServiceUnavailable, gin.H{"error": "Database connection failed"})
+	// Проверка подключения к БД
+	r.GET("/health/db", func(c *gin.Context) {
+		sqlDB, err := database.DB.DB() // получаем *sql.DB из GORM
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get raw DB"})
+			return
+		}
+
+		if err := sqlDB.Ping(); err != nil {
+			c.JSON(http.StatusServiceUnavailable, gin.H{"error": "Database ping failed"})
 			return
 		}
 		c.String(http.StatusOK, "Database connection OK")
