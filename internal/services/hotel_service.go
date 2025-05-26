@@ -1,8 +1,9 @@
 package services
 
 import (
-    "github.com/vitali-q/hotels-service/internal/database"
-    "github.com/vitali-q/hotels-service/internal/models"
+	"github.com/gofrs/uuid"
+	"github.com/vitali-q/hotels-service/internal/database"
+	"github.com/vitali-q/hotels-service/internal/models"
 )
 
 func CreateHotel(hotel *models.Hotel) (*models.Hotel, error) {
@@ -20,17 +21,17 @@ func GetAllHotels() ([]models.Hotel, error) {
     return hotels, nil
 }
 
-func GetHotelByID(id uint) (*models.Hotel, error) {
+func GetHotelByID(id uuid.UUID) (*models.Hotel, error) {
     var hotel models.Hotel
-    if err := database.DB.First(&hotel, id).Error; err != nil {
+    if err := database.DB.First(&hotel, "id = ?", id).Error; err != nil {
         return nil, err
     }
     return &hotel, nil
 }
 
-func UpdateHotel(id uint, newHotel *models.Hotel) (*models.Hotel, error) {
+func UpdateHotel(id uuid.UUID, newHotel *models.Hotel) (*models.Hotel, error) {
     var hotel models.Hotel
-    if err := database.DB.First(&hotel, id).Error; err != nil {
+    if err := database.DB.First(&hotel, "id = ?", id).Error; err != nil {
         return nil, err
     }
 
@@ -47,9 +48,11 @@ func UpdateHotel(id uint, newHotel *models.Hotel) (*models.Hotel, error) {
     return &hotel, nil
 }
 
-func DeleteHotel(id uint) error {
-    if err := database.DB.Delete(&models.Hotel{}, id).Error; err != nil {
+
+func DeleteHotel(id uuid.UUID) error {
+    if err := database.DB.Delete(&models.Hotel{}, "id = ?", id).Error; err != nil {
         return err
     }
     return nil
 }
+

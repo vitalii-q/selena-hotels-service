@@ -1,13 +1,13 @@
 package handlers
 
 import (
-	
-    "github.com/vitali-q/hotels-service/internal/models"
-    "github.com/vitali-q/hotels-service/internal/services"
-    "net/http"
-    "strconv"
+	"net/http"
 
-    "github.com/gin-gonic/gin"
+	"github.com/gofrs/uuid"
+	"github.com/vitali-q/hotels-service/internal/models"
+	"github.com/vitali-q/hotels-service/internal/services"
+
+	"github.com/gin-gonic/gin"
 )
 
 func RegisterHotelRoutes(r *gin.Engine) {
@@ -48,8 +48,14 @@ func GetHotels(c *gin.Context) {
 }
 
 func GetHotelByID(c *gin.Context) {
-    id, _ := strconv.Atoi(c.Param("id"))
-    hotel, err := services.GetHotelByID(uint(id))
+    uuidParam := c.Param("id")
+    hotelID, err := uuid.FromString(uuidParam)
+    if err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid UUID"})
+        return
+    }
+
+    hotel, err := services.GetHotelByID(hotelID)
     if err != nil {
         c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
         return
@@ -58,16 +64,22 @@ func GetHotelByID(c *gin.Context) {
     c.JSON(http.StatusOK, hotel)
 }
 
-func UpdateHotel(c *gin.Context) {
-    id, _ := strconv.Atoi(c.Param("id"))
-    var hotel models.Hotel
 
+func UpdateHotel(c *gin.Context) {
+    uuidParam := c.Param("id")
+    hotelID, err := uuid.FromString(uuidParam)
+    if err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid UUID"})
+        return
+    }
+
+    var hotel models.Hotel
     if err := c.ShouldBindJSON(&hotel); err != nil {
         c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
         return
     }
 
-    updatedHotel, err := services.UpdateHotel(uint(id), &hotel)
+    updatedHotel, err := services.UpdateHotel(hotelID, &hotel)
     if err != nil {
         c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
         return
@@ -76,9 +88,16 @@ func UpdateHotel(c *gin.Context) {
     c.JSON(http.StatusOK, updatedHotel)
 }
 
+
 func DeleteHotel(c *gin.Context) {
-    id, _ := strconv.Atoi(c.Param("id"))
-    err := services.DeleteHotel(uint(id))
+    uuidParam := c.Param("id")
+    hotelID, err := uuid.FromString(uuidParam)
+    if err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid UUID"})
+        return
+    }
+
+    err = services.DeleteHotel(hotelID)
     if err != nil {
         c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
         return
@@ -86,3 +105,4 @@ func DeleteHotel(c *gin.Context) {
 
     c.Status(http.StatusNoContent)
 }
+
