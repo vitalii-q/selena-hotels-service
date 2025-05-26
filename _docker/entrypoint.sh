@@ -49,6 +49,12 @@ else
   echo "📦 Database '${HOTELS_COCKROACH_DB_NAME}' already exists."
 fi
 
+# Путь к корню микросервиса hotels-service
+HOTELS_SERVICE_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+
+echo "📦 Applying database migrations..."
+"$HOTELS_SERVICE_ROOT/db/migrate.sh"
+
 # Запуск основного приложения
 echo "🚀 Starting hotels-service..."
 exec air -c .air.toml

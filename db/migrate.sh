@@ -2,16 +2,23 @@
 
 set -e # Падение скрипта при любой ошибке
 
-# Абсолютный путь до корня проекта selena-dev (два уровня выше скрипта)
-ROOT_DIR="$(cd "$(dirname "$0")/../../" && pwd)"
-
 # Подключаем переменные окружения из .env
 set -o allexport
-source "$ROOT_DIR/.env"
+source ".env"
 set +o allexport
+#cat ".env"
 
-DB_HOST="${LOCALHOST}"
-DB_PORT="${HOTELS_COCKROACH_PORT}"
+# Определим, где мы запускаемся: в контейнере или на хосте
+if grep -q docker /proc/1/cgroup || [ -f /.dockerenv ]; then
+  echo "🧱 Running inside Docker container"
+  DB_HOST=${HOTELS_COCKROACH_HOST}
+  DB_PORT=${HOTELS_COCKROACH_PORT_INNER}
+else
+  echo "💻 Running on host machine"
+  DB_HOST=${LOCALHOST}
+  DB_PORT=${HOTELS_COCKROACH_PORT}
+fi
+
 DB_USER="${HOTELS_COCKROACH_USER}"
 DB_NAME="${HOTELS_COCKROACH_DB_NAME}"
 MIGRATIONS_DIR="db/migrations"

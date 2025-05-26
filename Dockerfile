@@ -20,7 +20,7 @@ FROM golang:1.23.6
 WORKDIR /app
 
 # Устанавливаем curl и netcat (nc), необходимые для скрипта ожидания и загрузки cockroach cli
-RUN apt-get update && apt-get install -y curl netcat-openbsd ca-certificates \
+RUN apt-get update && apt-get install -y curl netcat-openbsd ca-certificates postgresql-client \
     && rm -rf /var/lib/apt/lists/*
 
 # Установка cockroach CLI
