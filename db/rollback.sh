@@ -1,9 +1,21 @@
 #!/bin/bash
+echo "🧭 Current working directory: $(pwd)"
+echo "📁 Script is located in: $(cd "$(dirname "$0")" && pwd)"
 
-DB_HOST="localhost"
-DB_PORT="9264"
-DB_USER="hotels_user"
-DB_NAME="hotels_db"
+set -e # Падение скрипта при любой ошибке
+
+# Абсолютный путь до корня проекта selena-dev (два уровня выше скрипта)
+ROOT_DIR="$(cd "$(dirname "$0")/../../" && pwd)"
+
+# Подключаем переменные окружения из .env
+set -o allexport
+source "$ROOT_DIR/.env"
+set +o allexport
+
+DB_HOST="${LOCALHOST}"
+DB_PORT="${HOTELS_COCKROACH_PORT}"
+DB_USER="${HOTELS_COCKROACH_USER}"
+DB_NAME="${HOTELS_COCKROACH_DB_NAME}"
 MIGRATIONS_DIR="db/migrations"
 
 echo "Rolling back migrations from $MIGRATIONS_DIR..."
