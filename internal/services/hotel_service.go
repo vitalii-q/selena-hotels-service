@@ -35,11 +35,21 @@ func UpdateHotel(id uuid.UUID, newHotel *models.Hotel) (*models.Hotel, error) {
         return nil, err
     }
 
-    hotel.Name = newHotel.Name
-    hotel.Description = newHotel.Description
-    hotel.Address = newHotel.Address
-    hotel.City = newHotel.City
-    hotel.Country = newHotel.Country
+    if newHotel.Name != nil {
+        hotel.Name = newHotel.Name
+    }
+    if newHotel.Description != nil {
+        hotel.Description = newHotel.Description
+    }
+    if newHotel.Address != nil {
+        hotel.Address = newHotel.Address
+    }
+    if newHotel.City != nil {
+        hotel.City = newHotel.City
+    }
+    if newHotel.Country != nil {
+        hotel.Country = newHotel.Country
+    }
 
     if err := database.DB.Save(&hotel).Error; err != nil {
         return nil, err
@@ -47,7 +57,6 @@ func UpdateHotel(id uuid.UUID, newHotel *models.Hotel) (*models.Hotel, error) {
 
     return &hotel, nil
 }
-
 
 func DeleteHotel(id uuid.UUID) error {
     if err := database.DB.Delete(&models.Hotel{}, "id = ?", id).Error; err != nil {
