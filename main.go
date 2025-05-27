@@ -8,22 +8,24 @@ import (
 	_ "github.com/lib/pq" // регистрация импорта для побочных эффектов
 	"github.com/vitali-q/hotels-service/internal/database"
 	"github.com/vitali-q/hotels-service/internal/handlers"
-	"gorm.io/driver/postgres"
+	//"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	//"github.com/sirupsen/logrus"
 )
 
 var DB *gorm.DB
 
-func InitDB() error {
-    dsn := "host=hotels-db user=hotels_user password=hotels_pass dbname=hotels port=26257 sslmode=disable"
+/*func InitDB() error {
+    dsn := "host=hotels-db user=hotels_user password=hotels_pass dbname=hotels_db port=26257 " +
+       "sslmode=verify-full sslrootcert=/certs/ca.crt " +
+       "sslcert=/certs/client.root.crt sslkey=/certs/client.root.key"
     db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
     if err != nil {
         return err
     }
     DB = db
     return nil
-}
+}*/
 
 func main() {
 	// Создаем новый экземпляр Gin
@@ -39,9 +41,11 @@ func main() {
 	})
 
 	// Инициализация базы данных через GORM
+	log.Println("Initializing DB...")
 	if err := database.Init(); err != nil {
 		log.Fatalf("Failed to connect to DB: %v", err)
 	}
+	log.Println("DB initialized successfully")
 
 	//logrus.Debug("qwer1")
 

@@ -35,15 +35,13 @@ if [ ${#FILES[@]} -eq 0 ]; then
     exit 1
 fi
 
+DB_URL="postgresql://${HOTELS_COCKROACH_USER}:${HOTELS_COCKROACH_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}?sslmode=verify-full"
 for file in "${FILES[@]}"; do
     echo "Applying migration: $file"
-
+    
     if ! cockroach sql \
         --certs-dir="$CERTS_DIR" \
-        --host="$DB_HOST" \
-        --port="$DB_PORT" \
-        --user="$DB_USER" \
-        --database="$DB_NAME" \
+        --url="$DB_URL" \
         --file="$file"; then
         echo "❌ Error applying migration: $file"
         exit 1

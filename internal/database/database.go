@@ -11,14 +11,19 @@ import (
 var DB *gorm.DB
 
 func Init() error {
+	fmt.Println("HOTELS_COCKROACH_PORT_INNER =", os.Getenv("HOTELS_COCKROACH_PORT_INNER"))
+
 	dsn := fmt.Sprintf(
-		"host=%s user=%s password=%s dbname=%s port=%s sslmode=%s",
+		"host=%s user=%s password=%s dbname=%s port=%s sslmode=%s sslrootcert=%s sslcert=%s sslkey=%s",
 		os.Getenv("HOTELS_COCKROACH_HOST"),
 		os.Getenv("HOTELS_COCKROACH_USER"),
 		os.Getenv("HOTELS_COCKROACH_PASSWORD"),
 		os.Getenv("HOTELS_COCKROACH_DB_NAME"),
 		os.Getenv("HOTELS_COCKROACH_PORT_INNER"),
 		os.Getenv("DB_SSLMODE"),
+		"/certs/ca.crt",
+		"/certs/client.hotels_user.crt",
+		"/certs/client.hotels_user.key",
 	)
 
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
@@ -29,3 +34,4 @@ func Init() error {
 	DB = db
 	return nil
 }
+
