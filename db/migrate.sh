@@ -22,6 +22,7 @@ fi
 DB_USER="${HOTELS_COCKROACH_USER}"
 DB_NAME="${HOTELS_COCKROACH_DB_NAME}"
 MIGRATIONS_DIR="db/migrations"
+CERTS_DIR="/certs" 
 
 echo "Applying migrations from $MIGRATIONS_DIR..."
 
@@ -36,8 +37,15 @@ fi
 
 for file in "${FILES[@]}"; do
     echo "Applying migration: $file"
-    if ! PGPASSWORD="postgres" psql -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d "$DB_NAME" -f "$file"; then
-        echo "Error applying migration: $file"
+
+    if ! cockroach sql \
+        --certs-dir="$CERTS_DIR" \
+        --host="$DB_HOST" \
+        --port="$DB_PORT" \
+        --user="$DB_USER" \
+        --database="$DB_NAME" \
+        --file="$file"; then
+        echo "❌ Error applying migration: $file"
         exit 1
     fi
 done
