@@ -37,7 +37,7 @@ fi
 
 DB_URL="postgresql://${HOTELS_COCKROACH_USER}:${HOTELS_COCKROACH_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}?sslmode=verify-full"
 for file in "${FILES[@]}"; do
-    echo "Applying migration: $file"
+    echo "Applying migration file: $file"
     
     if ! cockroach sql \
         --certs-dir="$CERTS_DIR" \

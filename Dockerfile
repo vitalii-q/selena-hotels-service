@@ -31,7 +31,6 @@ RUN curl -s https://binaries.cockroachdb.com/cockroach-v22.2.7.linux-amd64.tgz |
 
 # Копируем скомпилированное приложение и air
 COPY --from=builder /app .
-#COPY --from=builder /app/hotels-service /usr/local/bin/hotels-service # 
 COPY --from=builder /go/bin/air /usr/local/bin/air
 
 EXPOSE ${HOTELS_SERVICE_PORT}
