@@ -37,7 +37,7 @@ func main() {
 	//})
 
 	r.GET("/", func(c *gin.Context) {
-		c.String(http.StatusOK, "Hello, world!")
+		c.String(http.StatusOK, "Hello, hotels-service!")
 	})
 
 	// Инициализация базы данных через GORM
