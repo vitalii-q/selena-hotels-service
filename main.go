@@ -61,7 +61,7 @@ func main() {
 			c.JSON(http.StatusServiceUnavailable, gin.H{"error": "Database ping failed"})
 			return
 		}
-		c.String(http.StatusOK, "Database connection OK")
+		c.String(http.StatusOK, "Hotels-service: database connection OK")
 	})
 
 	//logrus.Error("ests")
