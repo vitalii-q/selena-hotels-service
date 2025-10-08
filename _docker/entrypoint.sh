@@ -68,9 +68,8 @@ HOTELS_SERVICE_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 echo "📦 Applying database migrations..."
 "$HOTELS_SERVICE_ROOT/db/migrate.sh"
 
-echo "🚀 Running hotels seeds..."
+# Database seeding
 go run "$HOTELS_SERVICE_ROOT/cmd/seed/main.go"
-echo "✅ Hotels seeding completed!"
 
 # Запуск основного приложения
 echo "🚀 Starting hotels-service..."

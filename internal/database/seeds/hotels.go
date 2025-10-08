@@ -39,13 +39,48 @@ func SeedHotels(db *gorm.DB) error {
 			City:        strPtr("Munich"),
 			Country:     strPtr("Germany"),
 		},
+		{
+			Name:        strPtr("Sunset Lodge"),
+			Description: strPtr("Charming lodge with panoramic sunset views."),
+			Address:     strPtr("Sunset Blvd 45"),
+			City:        strPtr("Frankfurt"),
+			Country:     strPtr("Germany"),
+		},
+		{
+			Name:        strPtr("City Center Hotel"),
+			Description: strPtr("Located in the heart of the city, perfect for business trips."),
+			Address:     strPtr("Central Avenue 10"),
+			City:        strPtr("Cologne"),
+			Country:     strPtr("Germany"),
+		},
+		{
+			Name:        strPtr("Lakeside Inn"),
+			Description: strPtr("Peaceful retreat next to the lake."),
+			Address:     strPtr("Lake Road 3"),
+			City:        strPtr("Stuttgart"),
+			Country:     strPtr("Germany"),
+		},
+		{
+			Name:        strPtr("Historic Grand Hotel"),
+			Description: strPtr("Luxury hotel with historic architecture."),
+			Address:     strPtr("Old Town 7"),
+			City:        strPtr("Dresden"),
+			Country:     strPtr("Germany"),
+		},
+		{
+			Name:        strPtr("Alpine Escape"),
+			Description: strPtr("Secluded cabin resort in the Alps."),
+			Address:     strPtr("Alpenweg 15"),
+			City:        strPtr("Garmisch-Partenkirchen"),
+			Country:     strPtr("Germany"),
+		},
+		
 	}
 
 	if err := db.Create(&hotels).Error; err != nil {
 		return err
 	}
 
-	log.Println("✅ Hotel seeds inserted successfully.")
 	return nil
 }
 
