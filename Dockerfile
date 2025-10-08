@@ -1,12 +1,12 @@
 # Stage 1: Build the Go binary
-FROM golang:1.23.6 as builder
+FROM golang:1.25 as builder
 
 WORKDIR /app
 
 COPY go.mod go.sum ./
 RUN go mod download
 
-RUN go install github.com/air-verse/air@latest
+RUN go install github.com/air-verse/air@v1.63.0
 
 COPY . .
 
@@ -15,7 +15,7 @@ COPY . .
 RUN go build -o hotels-service main.go
 
 # Stage 2: Runtime 
-FROM golang:1.23.6
+FROM golang:1.25
 
 WORKDIR /app
 

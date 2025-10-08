@@ -74,7 +74,20 @@ func SeedHotels(db *gorm.DB) error {
 			City:        strPtr("Garmisch-Partenkirchen"),
 			Country:     strPtr("Germany"),
 		},
-		
+		{
+			Name:        strPtr("Riverside Retreat"),
+			Description: strPtr("Quiet retreat by the river with modern amenities."),
+			Address:     strPtr("River Road 22"),
+			City:        strPtr("Heidelberg"),
+			Country:     strPtr("Germany"),
+		},
+		{
+			Name:        strPtr("Forest Haven"),
+			Description: strPtr("Cozy cabins surrounded by forest nature."),
+			Address:     strPtr("Forest Lane 9"),
+			City:        strPtr("Baden-Baden"),
+			Country:     strPtr("Germany"),
+		},		
 	}
 
 	if err := db.Create(&hotels).Error; err != nil {
