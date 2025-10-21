@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	_ "github.com/lib/pq" // регистрация импорта для побочных эффектов
+	_ "github.com/lib/pq" // import registration for side effects
 	"github.com/vitali-q/hotels-service/internal/database"
 	"github.com/vitali-q/hotels-service/internal/handlers"
 	//"gorm.io/driver/postgres"
@@ -15,25 +15,13 @@ import (
 
 var DB *gorm.DB
 
-/*func InitDB() error {
-    dsn := "host=hotels-db user=hotels_user password=hotels_pass dbname=hotels_db port=26257 " +
-       "sslmode=verify-full sslrootcert=/certs/ca.crt " +
-       "sslcert=/certs/client.root.crt sslkey=/certs/client.root.key"
-    db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
-    if err != nil {
-        return err
-    }
-    DB = db
-    return nil
-}*/
-
 func main() {
-	// Создаем новый экземпляр Gin
+	// Create a new Gin instance
 	r := gin.Default()
 
-	//logrus.SetLevel(logrus.DebugLevel)           // Установка уровня логирования
+	//logrus.SetLevel(logrus.DebugLevel)           // Setting the logging level
 	//logrus.SetFormatter(&logrus.TextFormatter{ 
-	//	FullTimestamp: true,                     // Красивый вывод логов
+	//	FullTimestamp: true,                       // Beautiful log output
 	//})
 
 	r.GET("/", func(c *gin.Context) {
@@ -49,9 +37,9 @@ func main() {
 
 	//logrus.Debug("qwer1")
 
-	// Проверка подключения к БД
+	// Checking the connection to the database
 	r.GET("/health/db", func(c *gin.Context) {
-		sqlDB, err := database.DB.DB() // получаем *sql.DB из GORM
+		sqlDB, err := database.DB.DB() // get *sql.DB from GORM
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get raw DB"})
 			return
@@ -70,7 +58,7 @@ func main() {
 
 	handlers.RegisterHotelRoutes(r)
 
-	// Настроим сервер на прослушивание порта 8080
+	// Configure the server to listen on port 8080
 	if err := r.Run(":9064"); err != nil {
 		log.Fatal("Error starting server: ", err)
 	}

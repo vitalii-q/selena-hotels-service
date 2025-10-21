@@ -87,7 +87,21 @@ func SeedHotels(db *gorm.DB) error {
 			Address:     strPtr("Forest Lane 9"),
 			City:        strPtr("Baden-Baden"),
 			Country:     strPtr("Germany"),
-		},		
+		},
+		{
+			Name:        strPtr("Augsburg Grand Hotel"),
+			Description: strPtr("Luxury hotel in the city center with modern amenities."),
+			Address:     strPtr("Maximilianstraße 15"),
+			City:        strPtr("Augsburg"),
+			Country:     strPtr("Germany"),
+		},
+		{
+			Name:        strPtr("Lech Riverside Inn"),
+			Description: strPtr("Comfortable stay along the Lech river with cozy rooms."),
+			Address:     strPtr("Lechstraße 7"),
+			City:        strPtr("Augsburg"),
+			Country:     strPtr("Germany"),
+		},
 	}
 
 	if err := db.Create(&hotels).Error; err != nil {
