@@ -33,6 +33,8 @@ RUN curl -s https://binaries.cockroachdb.com/cockroach-v22.2.7.linux-amd64.tgz |
 COPY --from=builder /app .
 COPY --from=builder /go/bin/air /usr/local/bin/air
 
+COPY db/certs /certs
+
 EXPOSE ${HOTELS_SERVICE_PORT}
 
 ENTRYPOINT ["./_docker/entrypoint.sh"]

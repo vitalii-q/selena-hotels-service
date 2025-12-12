@@ -22,12 +22,13 @@ done
 echo "✅ CockroachDB is available!"
 
 # Verifying SQL connection
-echo "🔐 Verifying connection to CockroachDB..."
+echo "🔐 Verifying connection to CockroachDB...1"
 cockroach sql \
   --certs-dir="$CERTS_DIR" \
   --host="$HOTELS_COCKROACH_HOST" \
   --port="$HOTELS_COCKROACH_PORT_INNER" \
-  --user=root \
+  --user="$HOTELS_COCKROACH_USER" \
+  --database="$HOTELS_COCKROACH_DB_NAME" \
   --execute="SELECT 1;"
 
 if [ $? -ne 0 ]; then
@@ -41,7 +42,8 @@ if ! cockroach sql \
     --certs-dir="$CERTS_DIR" \
     --host="$HOTELS_COCKROACH_HOST" \
     --port="$HOTELS_COCKROACH_PORT_INNER" \
-    --user=root \
+    --user="$HOTELS_COCKROACH_USER" \
+    --database="$HOTELS_COCKROACH_DB_NAME" \
     --execute="SELECT 1 FROM [SHOW DATABASES] WHERE database_name = '${HOTELS_COCKROACH_DB_NAME}';" | grep -q "1"; then
 
   echo "🛠 Creating user '${HOTELS_COCKROACH_USER}' and database '${HOTELS_COCKROACH_DB_NAME}'..."
@@ -50,7 +52,8 @@ if ! cockroach sql \
     --certs-dir="$CERTS_DIR" \
     --host="$HOTELS_COCKROACH_HOST" \
     --port="$HOTELS_COCKROACH_PORT_INNER" \
-    --user=root \
+    --user="$HOTELS_COCKROACH_USER" \
+    --database="$HOTELS_COCKROACH_DB_NAME" \
     --execute="
       CREATE USER IF NOT EXISTS ${HOTELS_COCKROACH_USER};
       CREATE DATABASE IF NOT EXISTS ${HOTELS_COCKROACH_DB_NAME};
