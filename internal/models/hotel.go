@@ -14,6 +14,8 @@ type Hotel struct {
     Address     *string   `json:"address,omitempty"`
     City        *string   `json:"city,omitempty"`
     Country     *string   `json:"country,omitempty"`
+    Price       *float64  `json:"price,omitempty"`
+	Amenities   []string  `json:"amenities" gorm:"type:text[]"`
     CreatedAt   time.Time `json:"created_at"`
     UpdatedAt   time.Time `json:"updated_at"`
 }

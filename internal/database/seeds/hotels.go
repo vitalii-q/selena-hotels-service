@@ -24,6 +24,8 @@ func SeedHotels(db *gorm.DB) error {
 			Address:     strPtr("Main Street 12"),
 			City:        strPtr("Berlin"),
 			Country:     strPtr("Germany"),
+			Price:       floatPtr(120.00),
+			Amenities:   []string{"WiFi", "Parking", "Rooftop Bar"},
 		},
 		{
 			Name:        strPtr("Sea Breeze Resort"),
@@ -31,6 +33,8 @@ func SeedHotels(db *gorm.DB) error {
 			Address:     strPtr("Coast Road 8"),
 			City:        strPtr("Hamburg"),
 			Country:     strPtr("Germany"),
+			Price:       floatPtr(180.50),
+			Amenities:   []string{"WiFi", "Pool", "Ocean View"},
 		},
 		{
 			Name:        strPtr("Mountain View Inn"),
@@ -38,6 +42,8 @@ func SeedHotels(db *gorm.DB) error {
 			Address:     strPtr("Bergstraße 5"),
 			City:        strPtr("Munich"),
 			Country:     strPtr("Germany"),
+			Price:       floatPtr(95.00),
+			Amenities:   []string{"WiFi", "Free Breakfast", "Mountain View"},
 		},
 		{
 			Name:        strPtr("Sunset Lodge"),
@@ -45,6 +51,8 @@ func SeedHotels(db *gorm.DB) error {
 			Address:     strPtr("Sunset Blvd 45"),
 			City:        strPtr("Frankfurt"),
 			Country:     strPtr("Germany"),
+			Price:       floatPtr(210.00),
+			Amenities:   []string{"WiFi", "Spa", "Gym", "Conference Rooms"},
 		},
 		{
 			Name:        strPtr("City Center Hotel"),
@@ -52,6 +60,8 @@ func SeedHotels(db *gorm.DB) error {
 			Address:     strPtr("Central Avenue 10"),
 			City:        strPtr("Cologne"),
 			Country:     strPtr("Germany"),
+			Price:       floatPtr(150.00),
+			Amenities:   []string{"WiFi", "Gym", "Sunset View"},
 		},
 		{
 			Name:        strPtr("Lakeside Inn"),
@@ -59,6 +69,8 @@ func SeedHotels(db *gorm.DB) error {
 			Address:     strPtr("Lake Road 3"),
 			City:        strPtr("Stuttgart"),
 			Country:     strPtr("Germany"),
+			Price:       floatPtr(130.00),
+			Amenities:   []string{"WiFi", "Lake View", "Breakfast Included"},
 		},
 		{
 			Name:        strPtr("Historic Grand Hotel"),
@@ -66,6 +78,8 @@ func SeedHotels(db *gorm.DB) error {
 			Address:     strPtr("Old Town 7"),
 			City:        strPtr("Dresden"),
 			Country:     strPtr("Germany"),
+			Price:       floatPtr(200.00),
+			Amenities:   []string{"WiFi", "Spa", "Historic Architecture"},
 		},
 		{
 			Name:        strPtr("Alpine Escape"),
@@ -73,6 +87,8 @@ func SeedHotels(db *gorm.DB) error {
 			Address:     strPtr("Alpenweg 15"),
 			City:        strPtr("Garmisch-Partenkirchen"),
 			Country:     strPtr("Germany"),
+			Price:       floatPtr(180.00),
+			Amenities:   []string{"WiFi", "Mountain View", "Sauna"},
 		},
 		{
 			Name:        strPtr("Riverside Retreat"),
@@ -80,6 +96,8 @@ func SeedHotels(db *gorm.DB) error {
 			Address:     strPtr("River Road 22"),
 			City:        strPtr("Heidelberg"),
 			Country:     strPtr("Germany"),
+			Price:       floatPtr(140.00),
+			Amenities:   []string{"WiFi", "River View", "Gym"},
 		},
 		{
 			Name:        strPtr("Forest Haven"),
@@ -87,6 +105,8 @@ func SeedHotels(db *gorm.DB) error {
 			Address:     strPtr("Forest Lane 9"),
 			City:        strPtr("Baden-Baden"),
 			Country:     strPtr("Germany"),
+			Price:       floatPtr(125.00),
+			Amenities:   []string{"WiFi", "Forest View", "Hiking Trails"},
 		},
 		{
 			Name:        strPtr("Augsburg Grand Hotel"),
@@ -94,6 +114,8 @@ func SeedHotels(db *gorm.DB) error {
 			Address:     strPtr("Maximilianstraße 15"),
 			City:        strPtr("Augsburg"),
 			Country:     strPtr("Germany"),
+			Price:       floatPtr(210.00),
+			Amenities:   []string{"WiFi", "Spa", "Gym", "Conference Rooms"},
 		},
 		{
 			Name:        strPtr("Lech Riverside Inn"),
@@ -101,6 +123,8 @@ func SeedHotels(db *gorm.DB) error {
 			Address:     strPtr("Lechstraße 7"),
 			City:        strPtr("Augsburg"),
 			Country:     strPtr("Germany"),
+			Price:       floatPtr(145.00),
+			Amenities:   []string{"WiFi", "River View", "Breakfast Included"},
 		},
 	}
 
@@ -114,4 +138,8 @@ func SeedHotels(db *gorm.DB) error {
 // вспомогательная функция для *string
 func strPtr(s string) *string {
 	return &s
+}
+
+func floatPtr(f float64) *float64 {
+    return &f
 }
