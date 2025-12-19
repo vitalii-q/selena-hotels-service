@@ -7,7 +7,8 @@ import (
 	"gorm.io/gorm"
 )
 
-// SeedHotels создает тестовые записи отелей, если таблица пуста
+// SeedHotels creates test hotel records if the table is empty
+// docker exec -it hotels-service go run cmd/seed/main.go
 func SeedHotels(db *gorm.DB) error {
 	var count int64
 	db.Model(&models.Hotel{}).Count(&count)

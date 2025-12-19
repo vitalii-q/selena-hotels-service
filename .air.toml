@@ -1,10 +1,16 @@
-root = "."
-tmp_dir = "tmp"
+root = "/app"
+tmp_dir = "/app/tmp"
 
 [build]
   cmd = "go build -o ./tmp/hotels-service main.go"
   bin = "./tmp/hotels-service"
-  include_ext = ["go"]
+  include_ext = ["go", "sql"]
   exclude_dir = ["vendor", "tmp"]
-  delay = 1000
+  delay = 2000
   stop_on_error = true
+
+[log]
+  time = true
+
+[watch]
+  dir = ["cmd", "internal", "db/migrations"]

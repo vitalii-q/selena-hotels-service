@@ -1,3 +1,14 @@
+# hotels-service/Dockerfile
+
+# --- Start microservice
+# docker build --no-cache --platform=linux/amd64 -t selena-hotels-service:latest .
+#
+# docker run -d --name hotels-service --env-file .env -p 9064:9064 --network selena-dev_app_network -v $(pwd):/app selena-hotels-service:latest
+# -v $(pwd):/app/hotels-service — mount the local sources into the container
+
+# --- Start DB for microservice
+# 
+
 # Stage 1: Build the Go binary
 FROM golang:1.25 as builder
 
