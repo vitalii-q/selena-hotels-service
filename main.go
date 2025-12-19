@@ -15,6 +15,8 @@ import (
 
 var DB *gorm.DB
 
+// RunSeeds launches all seeds for hotels-service
+// docker exec -it users-service_dev go run cmd/seed/main.go
 func main() {
 	// Create a new Gin instance
 	r := gin.Default()

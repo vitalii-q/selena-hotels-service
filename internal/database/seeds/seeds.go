@@ -6,7 +6,7 @@ import (
 	"github.com/vitali-q/hotels-service/internal/database"
 )
 
-// RunSeeds запускает все сиды для hotels-service
+// RunSeeds launches all seeds for hotels-service
 // docker exec -it users-service_dev go run cmd/seed/main.go
 func RunSeeds() {
 	log.Println("🌱 Initializing database connection...")

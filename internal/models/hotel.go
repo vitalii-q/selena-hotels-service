@@ -5,6 +5,7 @@ import (
 
 	"github.com/gofrs/uuid"
 	"gorm.io/gorm"
+    "gorm.io/datatypes"
 )
 
 type Hotel struct {
@@ -15,7 +16,7 @@ type Hotel struct {
     City        *string   `json:"city,omitempty"`
     Country     *string   `json:"country,omitempty"`
     Price       *float64  `json:"price,omitempty"`
-	Amenities   []string  `json:"amenities" gorm:"type:text[]"`
+	Amenities   datatypes.JSON `json:"amenities" gorm:"type:jsonb"`
     CreatedAt   time.Time `json:"created_at"`
     UpdatedAt   time.Time `json:"updated_at"`
 }

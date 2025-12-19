@@ -5,8 +5,8 @@ CREATE TABLE IF NOT EXISTS hotels (
     address TEXT NOT NULL,
     city TEXT NOT NULL,
     country TEXT NOT NULL,
-    price NUMERIC(10,2),
-    amenities TEXT[],
+    price DECIMAL(10,2),
+    amenities JSONB,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
