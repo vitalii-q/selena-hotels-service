@@ -44,11 +44,11 @@ func UpdateHotel(id uuid.UUID, newHotel *models.Hotel) (*models.Hotel, error) {
     if newHotel.Address != nil {
         hotel.Address = newHotel.Address
     }
-    if newHotel.City != nil {
-        hotel.City = newHotel.City
+    if newHotel.CityID != uuid.Nil {
+        hotel.CityID = newHotel.CityID
     }
-    if newHotel.Country != nil {
-        hotel.Country = newHotel.Country
+    if newHotel.CountryID != uuid.Nil {
+        hotel.CountryID = newHotel.CountryID
     }
 
     if err := database.DB.Save(&hotel).Error; err != nil {
