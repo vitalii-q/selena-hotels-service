@@ -28,7 +28,16 @@ func Init() error {
 
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
-		return err
+		return fmt.Errorf("gorm open failed: %w", err) // [правка] добавлено точное логирование ошибки
+	}
+
+	sqlDB, err := db.DB()
+	if err != nil {
+		return fmt.Errorf("failed to get sql.DB: %w", err)
+	}
+	
+	if err := sqlDB.Ping(); err != nil {
+		return fmt.Errorf("ping failed: %w", err)
 	}
 
 	DB = db

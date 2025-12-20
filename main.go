@@ -39,16 +39,26 @@ func main() {
 
 	// Checking the connection to the database
 	r.GET("/health/db", func(c *gin.Context) {
+		if database.DB == nil {
+			log.Println("database.DB is nil")
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "DB is nil"})
+			return
+    	}
+
 		sqlDB, err := database.DB.DB() // get *sql.DB from GORM
 		if err != nil {
+			log.Printf("Failed to get raw DB: %v\n", err)
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get raw DB"})
 			return
 		}
 
 		if err := sqlDB.Ping(); err != nil {
+			log.Printf("DB ping failed: %v\n", err)
 			c.JSON(http.StatusServiceUnavailable, gin.H{"error": "Database ping failed"})
 			return
 		}
+
+		log.Println("DB ping successful")
 		c.String(http.StatusOK, "Hotels-service: database connection OK ✅")
 	})
 
