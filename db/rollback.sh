@@ -1,4 +1,8 @@
 #!/bin/bash
+
+# Launch DB rollback:
+# docker exec -it hotels-service bash /app/db/rollback.sh
+
 set -euo pipefail
 
 echo "🧭 Current working directory: $(pwd)"

@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Launch DB migration:
+# docker exec -it hotels-service bash /app/db/migrate.sh
+
 set -e # Падение скрипта при любой ошибке
 
 # Подключаем переменные окружения из .env
