@@ -44,3 +44,10 @@ docker-compose.override.yml
 
 # Игнорировать кэшированные зависимости Go
 /pkg/mod/
+
+# DB volume local data
+/_docker/hotels-db-data
+
+# Certs for Cockroach DB connection
+/secure/certs
+/db/certs

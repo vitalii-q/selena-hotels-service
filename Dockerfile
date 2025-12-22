@@ -7,7 +7,9 @@
 # -v $(pwd):/app — mount the local sources into the container
 
 # --- Start DB for microservice
-# 
+# docker run -d --name hotels-db -p 9264:9264 -p 8080:8080 -v hotels-data:/cockroach/cockroach-data -v $(pwd)/secure/certs:/certs --network selena-dev_app_network cockroachdb/cockroach:v22.2.7 start-single-node --certs-dir=/certs --http-addr=0.0.0.0:8080 --sql-addr=0.0.0.0:9264
+# docker run -d --name hotels-db -p 9264:26258 -p 8080:8080 -v $(pwd)/_docker/hotels-db-data:/cockroach/cockroach-data -v $(pwd)/secure/certs:/certs --network selena-dev_app_network cockroachdb/cockroach:v22.2.7 start-single-node --certs-dir=/certs --http-addr=0.0.0.0:8080 --sql-addr=0.0.0.0:26258
+
 
 # Stage 1: Build the Go binary
 FROM golang:1.25 as builder

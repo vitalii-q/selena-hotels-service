@@ -21,8 +21,22 @@ until nc -z "$HOTELS_COCKROACH_HOST" "$HOTELS_COCKROACH_PORT_INNER"; do
 done
 echo "✅ CockroachDB is available!"
 
-# Verifying SQL connection
-echo "🔐 Verifying connection to CockroachDB...1"
+# Проверяем и создаём пользователя и базу через root
+echo "🛠 Ensuring user '${HOTELS_COCKROACH_USER}' and database '${HOTELS_COCKROACH_DB_NAME}' exist..."
+cockroach sql \
+  --certs-dir="$CERTS_DIR" \
+  --host="$HOTELS_COCKROACH_HOST" \
+  --port="$HOTELS_COCKROACH_PORT_INNER" \
+  --user=root \
+  --execute="
+    CREATE USER IF NOT EXISTS ${HOTELS_COCKROACH_USER};
+    CREATE DATABASE IF NOT EXISTS ${HOTELS_COCKROACH_DB_NAME};
+    GRANT ALL ON DATABASE ${HOTELS_COCKROACH_DB_NAME} TO ${HOTELS_COCKROACH_USER};
+  "
+echo "✅ User and database ready."
+
+# Проверка соединения уже от HOTELS_COCKROACH_USER после создания пользователя
+echo "🔐 Verifying connection to CockroachDB... as '${HOTELS_COCKROACH_USER}'..."
 cockroach sql \
   --certs-dir="$CERTS_DIR" \
   --host="$HOTELS_COCKROACH_HOST" \
@@ -34,35 +48,6 @@ cockroach sql \
 if [ $? -ne 0 ]; then
   echo "❌ Unable to connect to CockroachDB."
   exit 1
-fi
-
-# Проверка и создание пользователя и базы
-echo "🔍 Checking if database '${HOTELS_COCKROACH_DB_NAME}' exists..."
-if ! cockroach sql \
-    --certs-dir="$CERTS_DIR" \
-    --host="$HOTELS_COCKROACH_HOST" \
-    --port="$HOTELS_COCKROACH_PORT_INNER" \
-    --user="$HOTELS_COCKROACH_USER" \
-    --database="$HOTELS_COCKROACH_DB_NAME" \
-    --execute="SELECT 1 FROM [SHOW DATABASES] WHERE database_name = '${HOTELS_COCKROACH_DB_NAME}';" | grep -q "1"; then
-
-  echo "🛠 Creating user '${HOTELS_COCKROACH_USER}' and database '${HOTELS_COCKROACH_DB_NAME}'..."
-
-  cockroach sql \
-    --certs-dir="$CERTS_DIR" \
-    --host="$HOTELS_COCKROACH_HOST" \
-    --port="$HOTELS_COCKROACH_PORT_INNER" \
-    --user="$HOTELS_COCKROACH_USER" \
-    --database="$HOTELS_COCKROACH_DB_NAME" \
-    --execute="
-      CREATE USER IF NOT EXISTS ${HOTELS_COCKROACH_USER};
-      CREATE DATABASE IF NOT EXISTS ${HOTELS_COCKROACH_DB_NAME};
-      GRANT ALL ON DATABASE ${HOTELS_COCKROACH_DB_NAME} TO ${HOTELS_COCKROACH_USER};
-    "
-
-  echo "✅ User and database created."
-else
-  echo "📦 Database '${HOTELS_COCKROACH_DB_NAME}' already exists."
 fi
 
 # Путь к корню микросервиса hotels-service
