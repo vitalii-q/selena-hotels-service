@@ -15,8 +15,11 @@ func RunSeeds() {
 	}
 
 	log.Println("🌱 Seeding countries...")
-	// countries := SeedCountries(database.DB)
-	SeedCountries(database.DB)
+	countries := SeedCountries(database.DB)
+	//log.Printf("🌱 Countries map: %+v\n", countries)
+
+	log.Println("🌱 Seeding cities...")
+	SeedCities(database.DB, countries)
 
 	log.Println("🌱 Starting hotel seeds...")
 	/*if err := SeedHotels(database.DB); err != nil {
