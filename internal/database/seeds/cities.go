@@ -12,12 +12,21 @@ import (
 func SeedCities(db *gorm.DB, countries map[string]uuid.UUID) map[string]uuid.UUID {
 	var count int64
 	db.Model(&models.City{}).Count(&count)
+
+	result := make(map[string]uuid.UUID)
+
 	if count > 0 {
 		log.Printf("📦 Cities table already has %d records, skipping seeding.\n", count)
-		return nil
+		
+		// Забираем все города из базы, чтобы заполнить карту
+		var existingCities []models.City
+		db.Find(&existingCities)
+		for _, c := range existingCities {
+			result[c.Name] = c.ID
+		}
+		return result
 	}
 
-	// Список городов с привязкой к стране
 	cities := []models.City{
 		{Name: "Berlin", CountryID: countries["Germany"]},
 		{Name: "Hamburg", CountryID: countries["Germany"]},
@@ -40,10 +49,10 @@ func SeedCities(db *gorm.DB, countries map[string]uuid.UUID) map[string]uuid.UUI
 		log.Fatalf("❌ Failed to seed cities: %v", err)
 	}
 
-	result := make(map[string]uuid.UUID)
 	for _, c := range cities {
 		result[c.Name] = c.ID
 	}
+
 	log.Println("✅ Cities seeded successfully!")
 	return result
 }
