@@ -62,6 +62,8 @@ func main() {
 		c.String(http.StatusOK, "Hotels-service: database connection OK ✅")
 	})
 
+	r.GET("/api/v1/locations", handlers.GetCountriesWithCities)
+
 	//logrus.Error("ests")
 	//logrus.Debug("sfds")
 	//logrus.Debug("Hotel service started")
