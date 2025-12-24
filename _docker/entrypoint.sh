@@ -59,6 +59,7 @@ echo "📦 Applying database migrations..."
 # Database seeding
 go run "$HOTELS_SERVICE_ROOT/cmd/seed/main.go"
 
+export AIR_LOG_LEVEL=debug
 # Запуск основного приложения
 echo "🚀 Starting hotels-service..."
 exec air -c .air.toml

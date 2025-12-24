@@ -66,6 +66,7 @@ func main() {
 	//logrus.Debug("sfds")
 	//logrus.Debug("Hotel service started")
 
+	// API routers
 	r.GET("/api/v1/locations", handlers.GetCountriesWithCities)
 
 	handlers.RegisterHotelRoutes(r)
