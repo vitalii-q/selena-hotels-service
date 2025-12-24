@@ -1,5 +1,4 @@
 root = "/app"
-tmp_dir = "/app/tmp"
 
 [build]
   cmd = "go build -o ./tmp/hotels-service main.go"
@@ -12,5 +11,8 @@ tmp_dir = "/app/tmp"
 [log]
   time = true
 
-[watch]
-  dir = ["cmd", "internal", "db/migrations"]
+[color]
+main = "yellow"
+watcher = "cyan"
+build = "green"
+runner = "magenta"

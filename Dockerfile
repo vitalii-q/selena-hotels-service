@@ -25,7 +25,7 @@ COPY . .
 
 #RUN go test ./...
 
-RUN go build -o hotels-service main.go
+#RUN go build -o hotels-service main.go
 
 # Stage 2: Runtime 
 FROM golang:1.25
