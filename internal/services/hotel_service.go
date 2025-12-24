@@ -3,6 +3,7 @@ package services
 import (
 	"github.com/gofrs/uuid"
 	"github.com/vitali-q/hotels-service/internal/database"
+	"github.com/vitali-q/hotels-service/internal/dto"
 	"github.com/vitali-q/hotels-service/internal/models"
 )
 
@@ -13,13 +14,24 @@ func CreateHotel(hotel *models.Hotel) (*models.Hotel, error) {
     return hotel, nil
 }
 
-func GetAllHotels() ([]models.Hotel, error) {
-    var hotels []models.Hotel
-    if err := database.DB.Find(&hotels).Error; err != nil {
-        return nil, err
-    }
-    return hotels, nil
+func GetAllHotels() ([]dto.HotelResponse, error) {
+	var hotels []models.Hotel
+
+	if err := database.DB.
+		Preload("City").
+		Preload("Country").
+		Find(&hotels).Error; err != nil {
+		return nil, err
+	}
+
+	result := make([]dto.HotelResponse, 0, len(hotels))
+	for _, hotel := range hotels {
+		result = append(result, mapHotelToDTO(hotel))
+	}
+
+	return result, nil
 }
+
 
 func GetHotelByID(id uuid.UUID) (*models.Hotel, error) {
     var hotel models.Hotel

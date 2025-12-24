@@ -17,6 +17,10 @@ type Hotel struct {
 	CountryID   uuid.UUID      `json:"country_id"`
     Price       *float64       `json:"price,omitempty"`
 	Amenities   datatypes.JSON `json:"amenities" gorm:"type:jsonb"`
+
+	City        City           `gorm:"foreignKey:CityID"`
+	Country     Country        `gorm:"foreignKey:CountryID"`
+
     CreatedAt   time.Time      `json:"created_at"`
     UpdatedAt   time.Time      `json:"updated_at"`
 }

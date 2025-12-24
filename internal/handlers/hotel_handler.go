@@ -14,10 +14,11 @@ func RegisterHotelRoutes(r *gin.Engine) {
     hotels := r.Group("/hotels")
     {
         hotels.POST("", CreateHotel)
-        hotels.GET("", GetHotels)
         hotels.GET("/:id", GetHotelByID)
         hotels.PUT("/:id", UpdateHotel)
         hotels.DELETE("/:id", DeleteHotel)
+
+        hotels.GET("", GetHotels)
     }
 }
 
@@ -35,16 +36,6 @@ func CreateHotel(c *gin.Context) {
     }
 
     c.JSON(http.StatusCreated, createdHotel)
-}
-
-func GetHotels(c *gin.Context) {
-    hotels, err := services.GetAllHotels()
-    if err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-        return
-    }
-
-    c.JSON(http.StatusOK, hotels)
 }
 
 func GetHotelByID(c *gin.Context) {
@@ -106,3 +97,12 @@ func DeleteHotel(c *gin.Context) {
     c.Status(http.StatusNoContent)
 }
 
+func GetHotels(c *gin.Context) {
+	hotels, err := services.GetAllHotels()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, hotels)
+}
