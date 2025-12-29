@@ -7,6 +7,10 @@ import (
 	"github.com/vitali-q/hotels-service/internal/services"
 )
 
+func RegisterLocationRoutes(r *gin.RouterGroup) {
+	r.GET("/locations", GetCountriesWithCities)
+}
+
 func GetCountriesWithCities(c *gin.Context) {
 	data, err := services.GetCountriesWithCities()
 	if err != nil {

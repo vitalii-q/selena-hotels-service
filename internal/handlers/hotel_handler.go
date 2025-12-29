@@ -10,7 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func RegisterHotelRoutes(r *gin.Engine) {
+func RegisterHotelRoutes(r *gin.RouterGroup) {
     hotels := r.Group("/hotels")
     {
         hotels.POST("", CreateHotel)

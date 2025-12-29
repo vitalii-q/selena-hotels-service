@@ -1,13 +1,12 @@
 # hotels-service/Dockerfile
 
 # --- Start microservice
-# docker build --no-cache --platform=linux/amd64 -t selena-hotels-service:latest .
+# docker build --no-cache --platform=linux/amd64 -t selena-hotels-service:amd64 .
 #
 # docker run -d --name hotels-service --env-file .env -p 9064:9064 --network selena-dev_app_network -v $(pwd):/app selena-hotels-service:latest
 # -v $(pwd):/app — mount the local sources into the container
 
 # --- Start DB for microservice
-# docker run -d --name hotels-db -p 9264:9264 -p 8080:8080 -v hotels-data:/cockroach/cockroach-data -v $(pwd)/secure/certs:/certs --network selena-dev_app_network cockroachdb/cockroach:v22.2.7 start-single-node --certs-dir=/certs --http-addr=0.0.0.0:8080 --sql-addr=0.0.0.0:9264
 # docker run -d --name hotels-db -p 9264:26258 -p 8080:8080 -v $(pwd)/_docker/hotels-db-data:/cockroach/cockroach-data -v $(pwd)/secure/certs:/certs --network selena-dev_app_network cockroachdb/cockroach:v22.2.7 start-single-node --certs-dir=/certs --http-addr=0.0.0.0:8080 --sql-addr=0.0.0.0:26258
 
 

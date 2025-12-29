@@ -67,9 +67,9 @@ func main() {
 	//logrus.Debug("Hotel service started")
 
 	// API routers
-	r.GET("/api/v1/locations", handlers.GetCountriesWithCities)
-
-	handlers.RegisterHotelRoutes(r)
+	api := r.Group("/api/v1")
+	handlers.RegisterHotelRoutes(api)
+	handlers.RegisterLocationRoutes(api)
 
 	// Configure the server to listen on port 8080
 	if err := r.Run(":9064"); err != nil {
