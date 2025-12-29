@@ -3,7 +3,7 @@
 # --- Start microservice
 # docker build --no-cache --platform=linux/amd64 -t selena-hotels-service:amd64 .
 #
-# docker run -d --name hotels-service --env-file .env -p 9064:9064 --network selena-dev_app_network -v $(pwd):/app selena-hotels-service:latest
+# docker run -d --name hotels-service --env-file .env -p 9064:9064 --network selena-dev_app_network -v $(pwd):/app selena-hotels-service:amd64
 # -v $(pwd):/app — mount the local sources into the container
 
 # --- Start DB for microservice
@@ -17,8 +17,6 @@ WORKDIR /app
 
 COPY go.mod go.sum ./
 RUN go mod download
-
-RUN go install github.com/air-verse/air@v1.63.0
 
 COPY . .
 
@@ -35,15 +33,21 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y curl netcat-openbsd ca-certificates postgresql-client \
     && rm -rf /var/lib/apt/lists/*
 
-# Установка cockroach CLI
+# install cockroach CLI
 RUN curl -s https://binaries.cockroachdb.com/cockroach-v22.2.7.linux-amd64.tgz | tar -xz \
     && cp -i cockroach-v22.2.7.linux-amd64/cockroach /usr/local/bin/ \
     && chmod +x /usr/local/bin/cockroach \
     && rm -rf cockroach-v22.2.7.linux-amd64*
 
-# Копируем скомпилированное приложение и air
+# install AIR hot reload
+RUN curl -L https://github.com/air-verse/air/releases/download/v1.63.0/air_1.63.0_linux_amd64.tar.gz \
+    | tar -xz \
+    && mv air /usr/local/bin/air \
+    && chmod +x /usr/local/bin/air
+
+# Copying the compiled application
 COPY --from=builder /app .
-COPY --from=builder /go/bin/air /usr/local/bin/air
+#COPY --from=builder /go/bin/air /usr/local/bin/air
 
 COPY db/certs /certs
 
