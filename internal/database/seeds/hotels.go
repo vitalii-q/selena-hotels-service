@@ -12,61 +12,61 @@ import (
 	"gorm.io/gorm"
 )
 
-// SeedHotels creates hotels for all cities from database
 func SeedHotels(db *gorm.DB, cities map[string]uuid.UUID, countries map[string]uuid.UUID) error {
 	var count int64
 	db.Model(&models.Hotel{}).Count(&count)
+
 	if count > 0 {
 		log.Printf("📦 Hotels table already has %d records, skipping seeding.\n", count)
 		return nil
 	}
 
-	rand.Seed(time.Now().UnixNano())
+	// локальный RNG (Go 1.20+ корректно)
+	rng := rand.New(rand.NewSource(time.Now().UnixNano()))
 
-	// Загружаем города вместе со странами
-	var dbCities []models.City
-	if err := db.Preload("Country").Find(&dbCities).Error; err != nil {
-		return err
-	}
-
-	// Страны с большим количеством отелей
 	bigCountries := map[string]bool{
 		"Germany": true,
 		"France":  true,
-		"United States": true,
+		"Italy":   true,
+		"USA":     true,
 		"China":   true,
 		"Japan":   true,
-		"Italy":   true,
 	}
 
 	var hotels []models.Hotel
 
-	for _, city := range dbCities {
-		var minHotels, maxHotels int
-
-		if bigCountries[city.Country.Name] {
-			minHotels = 4
-			maxHotels = 6
-		} else {
-			minHotels = 2
-			maxHotels = 3
+	for _, cityID := range cities {
+		var city models.City
+		if err := db.First(&city, "id = ?", cityID).Error; err != nil {
+			continue
 		}
 
-		hotelsCount := rand.Intn(maxHotels-minHotels+1) + minHotels
+		var country models.Country
+		if err := db.First(&country, "id = ?", city.CountryID).Error; err != nil {
+			continue
+		}
 
-		for i := 1; i <= hotelsCount; i++ {
-			hotel := models.Hotel{
-				ID:          uuid.Must(uuid.NewV4()),
-				Name:        strPtr(fmt.Sprintf("%s Hotel %d", city.Name, i)),
+		minHotels := 2
+		maxHotels := 3
+
+		if bigCountries[country.Name] {
+			minHotels = 4
+			maxHotels = 6
+		}
+
+		hotelCount := rng.Intn(maxHotels-minHotels+1) + minHotels
+
+		for i := 0; i < hotelCount; i++ {
+			hotels = append(hotels, models.Hotel{
+				ID:          newUUID(),
+				Name:        strPtr(fmt.Sprintf("%s %s Hotel", city.Name, randomHotelSuffix(rng))),
 				Description: strPtr(fmt.Sprintf("Comfortable hotel in %s.", city.Name)),
-				Address:     strPtr(fmt.Sprintf("Main street %d, %s", i*3, city.Name)),
+				Address:     strPtr(generateStreetAddress(rng)),
 				CityID:      city.ID,
-				CountryID:   city.CountryID,
-				Price:       floatPtr(float64(rand.Intn(120) + 80)),
-				Amenities:   datatypes.JSON([]byte(`["WiFi","Breakfast","Parking"]`)),
-			}
-
-			hotels = append(hotels, hotel)
+				CountryID:   country.ID,
+				Price:       floatPtr(randomPrice(rng)),
+				Amenities:   randomAmenitiesJSON(rng),
+			})
 		}
 	}
 
@@ -74,15 +74,102 @@ func SeedHotels(db *gorm.DB, cities map[string]uuid.UUID, countries map[string]u
 		return err
 	}
 
-	log.Printf("✅ Seeded %d hotels successfully!\n", len(hotels))
+	log.Printf("✅ Seeded %d hotels successfully\n", len(hotels))
 	return nil
 }
 
-// helpers
+/* ---------------- HELPERS ---------------- */
+
+func newUUID() uuid.UUID {
+	id, _ := uuid.NewV4()
+	return id
+}
+
 func strPtr(s string) *string {
 	return &s
 }
 
 func floatPtr(f float64) *float64 {
 	return &f
+}
+
+/* -------- STREET GENERATOR -------- */
+
+func generateStreetAddress(rng *rand.Rand) string {
+	adjectives := []string{
+		"Central", "Old", "New", "Royal", "Green", "Grand", "Sunny",
+	}
+
+	objects := []string{
+		"Park", "River", "Market", "Garden", "Hill", "Square", "Lake",
+	}
+
+	streetTypes := []string{
+		"Street", "Avenue", "Road", "Boulevard", "Lane",
+	}
+
+	number := rng.Intn(90) + 1
+
+	return fmt.Sprintf(
+		"%s %s %s %d",
+		randomFrom(rng, adjectives),
+		randomFrom(rng, objects),
+		randomFrom(rng, streetTypes),
+		number,
+	)
+}
+
+/* -------- AMENITIES -------- */
+
+func randomAmenitiesJSON(rng *rand.Rand) datatypes.JSON {
+	allAmenities := []string{
+		"WiFi",
+		"Breakfast",
+		"Parking",
+		"Gym",
+		"Spa",
+		"Pool",
+		"Air Conditioning",
+		"Pet Friendly",
+		"Restaurant",
+		"Bar",
+	}
+
+	rng.Shuffle(len(allAmenities), func(i, j int) {
+		allAmenities[i], allAmenities[j] = allAmenities[j], allAmenities[i]
+	})
+
+	count := rng.Intn(2) + 2 // 2–3 amenities
+	selected := allAmenities[:count]
+
+	json := fmt.Sprintf(`["%s"]`, joinWithQuotes(selected))
+	return datatypes.JSON([]byte(json))
+}
+
+/* -------- MISC -------- */
+
+func randomFrom(rng *rand.Rand, list []string) string {
+	return list[rng.Intn(len(list))]
+}
+
+func joinWithQuotes(items []string) string {
+	result := ""
+	for i, v := range items {
+		if i > 0 {
+			result += `","`
+		}
+		result += v
+	}
+	return result
+}
+
+func randomHotelSuffix(rng *rand.Rand) string {
+	suffixes := []string{
+		"Central", "Grand", "Plaza", "Inn", "Suites", "Residence",
+	}
+	return randomFrom(rng, suffixes)
+}
+
+func randomPrice(rng *rand.Rand) float64 {
+	return float64(rng.Intn(180) + 70) // 70–250
 }
