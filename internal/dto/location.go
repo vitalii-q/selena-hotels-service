@@ -3,8 +3,9 @@ package dto
 import "github.com/gofrs/uuid"
 
 type CityDTO struct {
-	ID   uuid.UUID `json:"id"`
-	Name string    `json:"name"`
+	ID   uuid.UUID   `json:"id"`
+	Name string      `json:"name"`
+	Capital bool     `json:"capital"`
 }
 
 type CountryWithCitiesDTO struct {

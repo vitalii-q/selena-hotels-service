@@ -9,6 +9,7 @@
 # --- Start DB for microservice
 # docker run -d --name hotels-db -p 9264:26258 -p 8080:8080 -v $(pwd)/_docker/hotels-db-data:/cockroach/cockroach-data -v $(pwd)/secure/certs:/certs --network selena-dev_app_network cockroachdb/cockroach:v22.2.7 start-single-node --certs-dir=/certs --http-addr=0.0.0.0:8080 --sql-addr=0.0.0.0:26258
 
+# The sequence of launching microservices: hotels-service -> users-service -> bookings-service
 
 # Stage 1: Build the Go binary
 FROM golang:1.25 as builder
@@ -21,8 +22,6 @@ RUN go mod download
 COPY . .
 
 #RUN go test ./...
-
-#RUN go build -o hotels-service main.go
 
 # Stage 2: Runtime 
 FROM golang:1.25
@@ -47,7 +46,6 @@ RUN curl -L https://github.com/air-verse/air/releases/download/v1.63.0/air_1.63.
 
 # Copying the compiled application
 COPY --from=builder /app .
-#COPY --from=builder /go/bin/air /usr/local/bin/air
 
 COPY db/certs /certs
 
