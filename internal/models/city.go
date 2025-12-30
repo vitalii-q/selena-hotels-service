@@ -10,7 +10,10 @@ import (
 type City struct {
 	ID        uuid.UUID `json:"id" gorm:"type:uuid;primary_key"`
 	Name      string    `json:"name" gorm:"not null"`
+
 	CountryID uuid.UUID `json:"country_id" gorm:"not null"`
+	Country   Country   `json:"country" gorm:"foreignKey:CountryID"`
+	
 	Capital   bool      `json:"capital" gorm:"default:false"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`

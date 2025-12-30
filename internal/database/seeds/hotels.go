@@ -1,138 +1,84 @@
 package seeds
 
 import (
+	"fmt"
 	"log"
+	"math/rand"
+	"time"
 
-	"github.com/vitali-q/hotels-service/internal/models"
 	"github.com/gofrs/uuid"
+	"github.com/vitali-q/hotels-service/internal/models"
 	"gorm.io/datatypes"
 	"gorm.io/gorm"
 )
 
-// SeedHotels creates test hotel records if the table is empty
+// SeedHotels creates hotels for all cities from database
 func SeedHotels(db *gorm.DB, cities map[string]uuid.UUID, countries map[string]uuid.UUID) error {
 	var count int64
 	db.Model(&models.Hotel{}).Count(&count)
-
 	if count > 0 {
 		log.Printf("📦 Hotels table already has %d records, skipping seeding.\n", count)
 		return nil
 	}
 
-	hotels := []models.Hotel{
-		{
-			Name:        strPtr("Hotel Aurora"),
-			Description: strPtr("A modern 4-star hotel with a rooftop terrace."),
-			Address:     strPtr("Main Street 12"),
-			CityID:      cities["Berlin"],
-			CountryID:   countries["Germany"],
-			Price:       floatPtr(120.00),
-			Amenities:   datatypes.JSON([]byte(`["WiFi","Parking","Rooftop Bar"]`)),
-		},
-		{
-			Name:        strPtr("Sea Breeze Resort"),
-			Description: strPtr("Cozy seaside resort with ocean view."),
-			Address:     strPtr("Coast Road 8"),
-			CityID:      cities["Hamburg"],
-			CountryID:   countries["Germany"],
-			Price:       floatPtr(180.50),
-			Amenities:   datatypes.JSON([]byte(`["WiFi","Pool","Ocean View"]`)),
-		},
-		{
-			Name:        strPtr("Mountain View Inn"),
-			Description: strPtr("Quiet retreat near the Alps."),
-			Address:     strPtr("Bergstraße 5"),
-			CityID:      cities["Munich"],
-			CountryID:   countries["Germany"],
-			Price:       floatPtr(95.00),
-			Amenities:   datatypes.JSON([]byte(`["WiFi","Free Breakfast","Mountain View"]`)),
-		},
-		{
-			Name:        strPtr("Sunset Lodge"),
-			Description: strPtr("Charming lodge with panoramic sunset views."),
-			Address:     strPtr("Sunset Blvd 45"),
-			CityID:      cities["Frankfurt"],
-			CountryID:   countries["Germany"],
-			Price:       floatPtr(210.00),
-			Amenities:   datatypes.JSON([]byte(`["WiFi","Spa","Gym","Conference Rooms"]`)),
-		},
-		{
-			Name:        strPtr("City Center Hotel"),
-			Description: strPtr("Located in the heart of the city, perfect for business trips."),
-			Address:     strPtr("Central Avenue 10"),
-			CityID:      cities["Cologne"],
-			CountryID:   countries["Germany"],
-			Price:       floatPtr(150.00),
-			Amenities:   datatypes.JSON([]byte(`["WiFi","Gym","Sunset View"]`)),
-		},
-		{
-			Name:        strPtr("Lakeside Inn"),
-			Description: strPtr("Peaceful retreat next to the lake."),
-			Address:     strPtr("Lake Road 3"),
-			CityID:      cities["Stuttgart"],
-			CountryID:   countries["Germany"],
-			Price:       floatPtr(130.00),
-			Amenities:   datatypes.JSON([]byte(`["WiFi","Lake View","Breakfast Included"]`)),
-		},
-		{
-			Name:        strPtr("Historic Grand Hotel"),
-			Description: strPtr("Luxury hotel with historic architecture."),
-			Address:     strPtr("Old Town 7"),
-			CityID:      cities["Dresden"],
-			CountryID:   countries["Germany"],
-			Price:       floatPtr(200.00),
-			Amenities:   datatypes.JSON([]byte(`["WiFi","Spa","Historic Architecture"]`)),
-		},
-		{
-			Name:        strPtr("Alpine Escape"),
-			Description: strPtr("Secluded cabin resort in the Alps."),
-			Address:     strPtr("Alpenweg 15"),
-			CityID:      cities["Garmisch-Partenkirchen"],
-			CountryID:   countries["Germany"],
-			Price:       floatPtr(180.00),
-			Amenities:   datatypes.JSON([]byte(`["WiFi","Mountain View","Sauna"]`)),
-		},
-		{
-			Name:        strPtr("Riverside Retreat"),
-			Description: strPtr("Quiet retreat by the river with modern amenities."),
-			Address:     strPtr("River Road 22"),
-			CityID:      cities["Heidelberg"],
-			CountryID:   countries["Germany"],
-			Price:       floatPtr(140.00),
-			Amenities:   datatypes.JSON([]byte(`["WiFi","River View","Gym"]`)),
-		},
-		{
-			Name:        strPtr("Forest Haven"),
-			Description: strPtr("Cozy cabins surrounded by forest nature."),
-			Address:     strPtr("Forest Lane 9"),
-			CityID:      cities["Baden-Baden"],
-			CountryID:   countries["Germany"],
-			Price:       floatPtr(125.00),
-			Amenities:   datatypes.JSON([]byte(`["WiFi","Forest View","Hiking Trails"]`)),
-		},
-		{
-			Name:        strPtr("Augsburg Grand Hotel"),
-			Description: strPtr("Luxury hotel in the city center with modern amenities."),
-			Address:     strPtr("Maximilianstraße 15"),
-			CityID:      cities["Augsburg"],
-			CountryID:   countries["Germany"],
-			Price:       floatPtr(210.00),
-			Amenities:   datatypes.JSON([]byte(`["WiFi","Spa","Gym","Conference Rooms"]`)),
-		},
+	rand.Seed(time.Now().UnixNano())
+
+	// Загружаем города вместе со странами
+	var dbCities []models.City
+	if err := db.Preload("Country").Find(&dbCities).Error; err != nil {
+		return err
 	}
 
-	for i := range hotels {
-		hotels[i].ID, _ = uuid.NewV4()
+	// Страны с большим количеством отелей
+	bigCountries := map[string]bool{
+		"Germany": true,
+		"France":  true,
+		"United States": true,
+		"China":   true,
+		"Japan":   true,
+		"Italy":   true,
+	}
+
+	var hotels []models.Hotel
+
+	for _, city := range dbCities {
+		var minHotels, maxHotels int
+
+		if bigCountries[city.Country.Name] {
+			minHotels = 4
+			maxHotels = 6
+		} else {
+			minHotels = 2
+			maxHotels = 3
+		}
+
+		hotelsCount := rand.Intn(maxHotels-minHotels+1) + minHotels
+
+		for i := 1; i <= hotelsCount; i++ {
+			hotel := models.Hotel{
+				ID:          uuid.Must(uuid.NewV4()),
+				Name:        strPtr(fmt.Sprintf("%s Hotel %d", city.Name, i)),
+				Description: strPtr(fmt.Sprintf("Comfortable hotel in %s.", city.Name)),
+				Address:     strPtr(fmt.Sprintf("Main street %d, %s", i*3, city.Name)),
+				CityID:      city.ID,
+				CountryID:   city.CountryID,
+				Price:       floatPtr(float64(rand.Intn(120) + 80)),
+				Amenities:   datatypes.JSON([]byte(`["WiFi","Breakfast","Parking"]`)),
+			}
+
+			hotels = append(hotels, hotel)
+		}
 	}
 
 	if err := db.Create(&hotels).Error; err != nil {
 		return err
 	}
 
+	log.Printf("✅ Seeded %d hotels successfully!\n", len(hotels))
 	return nil
 }
 
-// вспомогательная функция для *string
+// helpers
 func strPtr(s string) *string {
 	return &s
 }

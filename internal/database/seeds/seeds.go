@@ -7,7 +7,7 @@ import (
 )
 
 // RunSeeds launches all seeds for hotels-service
-// docker exec -it hotels-service_dev go run cmd/seed/main.go
+// docker exec -it hotels-service go run cmd/seed/main.go
 func RunSeeds() {
 	log.Println("🌱 Initializing database connection...")
 	if err := database.Init(); err != nil {
