@@ -28,6 +28,21 @@ func SeedCountries(db *gorm.DB) map[string]uuid.UUID {
 		{Name: "Germany", Code: "DE"},
 		{Name: "France", Code: "FR"},
 		{Name: "Italy", Code: "IT"},
+		{Name: "United Kingdom", Code: "GB"},
+		{Name: "United States", Code: "US"},
+		{Name: "Finland", Code: "FI"},
+		{Name: "Poland", Code: "PL"},
+		{Name: "Ukraine", Code: "UA"},
+		{Name: "Spain", Code: "ES"},
+		{Name: "Dubai", Code: "AE"},
+		{Name: "China", Code: "CN"},
+		{Name: "Japan", Code: "JP"},
+		{Name: "Canada", Code: "CA"},
+		{Name: "Switzerland", Code: "CH"},
+		{Name: "Portugal", Code: "PT"},
+		{Name: "Netherlands", Code: "NL"},
+		{Name: "Belgium", Code: "BE"},
+		{Name: "Australia", Code: "AU"},
 	}
 
 	for i := range newCountries {
