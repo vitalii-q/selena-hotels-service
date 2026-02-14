@@ -49,5 +49,5 @@ docker-compose.override.yml
 /_docker/hotels-db-data
 
 # Certs for Cockroach DB connection
-/secure/certs
+/secure
 /db/certs
