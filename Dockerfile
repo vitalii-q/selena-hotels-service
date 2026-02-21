@@ -11,6 +11,9 @@
 
 # The sequence of launching microservices: hotels-service -> users-service -> bookings-service
 
+# Push image to ECR:
+# docker tag selena-hotels-service:amd64 235484063004.dkr.ecr.eu-central-1.amazonaws.com/selena-hotels-service:amd64
+
 # Stage 1: Build the Go binary
 FROM golang:1.25 as builder
 
