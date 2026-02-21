@@ -5,7 +5,13 @@ MAX_RETRIES=10
 RETRY_COUNT=0
 
 # Путь к сертификатам
-CERTS_DIR=/certs
+if [ "$PROJECT_SUFFIX" = "prod" ]; then
+  CERTS_DIR="/certs-cloud"
+else
+  CERTS_DIR="/certs"
+fi
+
+echo "Using environment: $PROJECT_SUFFIX"
 
 # Ожидание доступности порта
 echo "⏳ Waiting for CockroachDB at ${HOTELS_COCKROACH_HOST}:${HOTELS_COCKROACH_PORT_INNER}..."
