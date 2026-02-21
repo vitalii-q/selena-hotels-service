@@ -1,6 +1,6 @@
 # hotels-service/Dockerfile
 
-# --- Start microservice
+# === Build and launch docker microservice image =======================================================
 # docker build --no-cache --platform=linux/amd64 -t selena-hotels-service:amd64 .
 #
 # docker run -d --name hotels-service --env-file .env -p 9064:9064 --network selena-dev_app_network -v $(pwd):/app selena-hotels-service:amd64
@@ -11,8 +11,13 @@
 
 # The sequence of launching microservices: hotels-service -> users-service -> bookings-service
 
-# Push image to ECR:
+
+# === ECR repository ===========================================================
+
+# Add tag and push users-service image to ECR repository:
 # docker tag selena-hotels-service:amd64 235484063004.dkr.ecr.eu-central-1.amazonaws.com/selena-hotels-service:amd64
+#
+# docker push 235484063004.dkr.ecr.eu-central-1.amazonaws.com/selena-hotels-service:amd64
 
 # Stage 1: Build the Go binary
 FROM golang:1.25 as builder
