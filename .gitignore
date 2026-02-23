@@ -48,6 +48,12 @@ docker-compose.override.yml
 # DB volume local data
 /_docker/hotels-db-data
 
-# Certs for Cockroach DB connection
-/secure
-/db/certs
+# Ignore certs for CockroachDB connection, but include README files
+/secure/certs-cloud/*
+!/secure/certs-cloud/README.md
+
+/secure/certs/*
+!/secure/certs/README.md
+
+/db/certs/*
+!/db/certs/README.md
