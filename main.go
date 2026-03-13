@@ -17,7 +17,19 @@ var DB *gorm.DB
 
 func main() {
 	// Create a new Gin instance
-	r := gin.Default()
+	//r := gin.Default()  // enables middleware (standard Logger - writes every HTTP request, Recovery)
+
+	r := gin.New() // creating a router without the standard logger
+	r.Use(gin.Recovery())
+
+	r.Use(gin.LoggerWithConfig(gin.LoggerConfig{
+		Output:    gin.DefaultWriter,
+		SkipPaths: []string{
+		"/health/live",
+		"/health/db",    // enabling standard logs at this address
+	},
+	}))
+
 
 	//logrus.SetLevel(logrus.DebugLevel)           // Setting the logging level
 	//logrus.SetFormatter(&logrus.TextFormatter{ 
@@ -36,6 +48,10 @@ func main() {
 	log.Println("DB initialized successfully")
 
 	//logrus.Debug("qwer1")
+
+	r.GET("/health/live", func(c *gin.Context) {
+		c.String(http.StatusOK, "OK")
+	})
 
 	// Checking the connection to the database
 	r.GET("/health/db", func(c *gin.Context) {
@@ -58,7 +74,7 @@ func main() {
 			return
 		}
 
-		log.Println("DB ping successful")
+		//log.Println("DB ping successful")
 		c.String(http.StatusOK, "Hotels-service: database connection OK ✅")
 	})
 
