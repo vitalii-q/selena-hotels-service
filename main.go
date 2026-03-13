@@ -20,6 +20,7 @@ func main() {
 	//r := gin.Default()  // enables middleware (standard Logger - writes every HTTP request, Recovery)
 
 	r := gin.New() // creating a router without the standard logger
+	r.SetTrustedProxies(nil) // secure proxy configuration
 	r.Use(gin.Recovery())
 
 	r.Use(gin.LoggerWithConfig(gin.LoggerConfig{
