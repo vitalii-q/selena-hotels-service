@@ -14,6 +14,9 @@
 
 # === ECR repository ===========================================================
 
+# ECR login:
+# aws ecr get-login-password --region eu-central-1 | docker login --username AWS --password-stdin 235484063004.dkr.ecr.eu-central-1.amazonaws.com
+
 # Add tag and push users-service image to ECR repository:
 # docker tag selena-hotels-service:amd64 235484063004.dkr.ecr.eu-central-1.amazonaws.com/selena-hotels-service:amd64
 #

@@ -1,4 +1,4 @@
-cd /secure/certs-cloud
+cd /hotels-service/secure/certs-cloud
 
 # 1. Create CA files
 cockroach cert create-ca --certs-dir=. --ca-key=ca.key
@@ -12,12 +12,17 @@ cockroach cert create-node \
   --certs-dir=. \
   --ca-key=ca.key
 
-# 3. Create a client certificate for hotels_user
+# 3. Create a client certificate for root (for creation DB record with hotels_user)
+cockroach cert create-client root \
+  --certs-dir=. \
+  --ca-key=ca.key
+
+# 4. Create a client certificate for hotels_user
 cockroach cert create-client hotels_user \
   --certs-dir=. \
   --ca-key=ca.key
 
-# 4. Copy certs to directories /infrastructure/certs/hotels_db/ and /infrastructure/certs/hotels_service/ 
+# 5. Copy certs to directories /infrastructure/certs/hotels_db/ and /infrastructure/certs/hotels_service/ 
 
 # Set rights:
 chmod 600 client.hotels_user.key
