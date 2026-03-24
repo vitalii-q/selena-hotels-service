@@ -9,10 +9,14 @@ import (
 )
 
 func SetupRouter(deps *bootstrap.Dependencies) *gin.Engine {
-	// --- Logs settings ---
+	// --- Router initialization ---
 	r := gin.New() // creating a router without the standard logger
 	r.SetTrustedProxies(nil) // secure proxy configuration
-	r.Use(gin.Recovery())    // Recover from panics to prevent server crash
+
+	// --- Error recovery ---
+	r.Use(gin.Recovery()) // Recover from panics and log stack trace
+
+	// --- Access logs configuration ---
 	r.Use(gin.LoggerWithConfig(gin.LoggerConfig{
 		Output:    gin.DefaultWriter,
 		SkipPaths: []string{

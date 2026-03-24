@@ -14,11 +14,15 @@ import (
 
 type Dependencies struct {
 	DB              *gorm.DB
+	Config          *config.Config
 	HotelHandler    *handlers.HotelHandler
 	LocationHandler *handlers.LocationHandler
 }
 
 func Init() (*Dependencies, error) {
+	// --- Configs from .env file ---
+	cfg := config.Load()
+
 	// --- Database ---
 	log.Println("🌱 Initializing database...")
 	db, err := database.Init(config.Load())
@@ -40,6 +44,7 @@ func Init() (*Dependencies, error) {
 
 	return &Dependencies{
 		DB:              db,
+		Config:          cfg,
 		HotelHandler:    hotelHandler,
 		LocationHandler: locationHandler,
 	}, nil

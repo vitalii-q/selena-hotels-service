@@ -4,7 +4,7 @@ import (
 	"os"
 )
 
-// Config содержит все настройки приложения
+// Config contains all the application settings
 type Config struct {
 	Env string
 
@@ -20,10 +20,10 @@ type Config struct {
 	ProjectSuffix string
 }
 
-// Load читает конфигурацию из env переменных
+// Load reads configuration from env variables
 func Load() *Config {
-	return &Config{
-		Env:       os.Getenv("PROJECT_SUFFIX"),
+	cfg := &Config{
+		Env:        os.Getenv("PROJECT_SUFFIX"), // TODO: Remane to APP_ENV
 
 		Port:       os.Getenv("HOTELS_SERVICE_PORT"),
 
@@ -33,7 +33,12 @@ func Load() *Config {
 		DBName:     os.Getenv("HOTELS_COCKROACH_DB_NAME"),
 		DBPort:     os.Getenv("HOTELS_COCKROACH_PORT_INNER"),
 		DBSSLMode:  os.Getenv("DB_SSLMODE"),
-
-		ProjectSuffix: os.Getenv("PROJECT_SUFFIX"),
 	}
+
+	// --- Validate required configuration --- 
+	if cfg.Port == "" {
+		panic("HOTELS_SERVICE_PORT is not set")
+	}
+
+	return cfg
 }
