@@ -6,9 +6,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq" // import registration for side effects
-	"github.com/vitali-q/hotels-service/internal/database"
+	"github.com/vitali-q/hotels-service/internal/bootstrap"
 	"github.com/vitali-q/hotels-service/internal/handlers"
-	"github.com/vitali-q/hotels-service/internal/services"
 	"gorm.io/gorm"
 	//"gorm.io/driver/postgres"
 	//"github.com/sirupsen/logrus"
@@ -28,47 +27,27 @@ func main() {
 		},
 	}))
 
-
-	//logrus.SetLevel(logrus.DebugLevel)           // Setting the logging level
-	//logrus.SetFormatter(&logrus.TextFormatter{ 
-	//	FullTimestamp: true,                       // Beautiful log output
-	//})
+	// --- Bootstrap all dependencies ---
+	deps, err := bootstrap.Init()
+	if err != nil {
+		log.Fatalf("Failed to bootstrap app: %v", err)
+	}
 
 	// --- Router routes settings ---
 	r.GET("/", func(c *gin.Context) {
 		c.String(http.StatusOK, "Hello, hotels-service!")
 	})
 
-	// --- Database initialization ---
-	log.Println("Initializing DB...")
-	db, err := database.Init(); if err != nil {
-		log.Fatalf("Failed to connect to DB: %v", err)
-	}
-	log.Println("DB initialized successfully")
-
-	//logrus.Debug("qwer1")
-
+// --- Health / Ready ---
 	r.GET("/health", func(c *gin.Context) { c.String(http.StatusOK, "OK") })
+	r.GET("/ready", func(c *gin.Context) {DBcheck(c, deps.DB)})
 
-	// Checking the connection to the database
-	r.GET("/ready", func(c *gin.Context) {DBcheck(c, db)})
-
-	//logrus.Error("ests")
-	//logrus.Debug("sfds")
-	//logrus.Debug("Hotel service started")
-
-	hotelService := services.NewHotelService(db)
-	hotelHandler := handlers.NewHotelHandler(hotelService)
-
-	locationService := services.NewLocationService(db)
-	locationHandler := handlers.NewLocationHandler(locationService)
-
-	// API routers
+	// --- API routes ---
 	api := r.Group("/api/v1")
-	handlers.RegisterHotelRoutes(api, hotelHandler)
-	handlers.RegisterLocationRoutes(api, locationHandler)
+	handlers.RegisterHotelRoutes(api, deps.HotelHandler)
+	handlers.RegisterLocationRoutes(api, deps.LocationHandler)
 
-	// Configure the server to listen on port 8080
+	// --- Start server ---
 	if err := r.Run(":9064"); err != nil {
 		log.Fatal("Error starting server: ", err)
 	}

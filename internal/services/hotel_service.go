@@ -4,31 +4,27 @@ import (
 	"github.com/gofrs/uuid"
 	"github.com/vitali-q/hotels-service/internal/dto"
 	"github.com/vitali-q/hotels-service/internal/models"
-	"gorm.io/gorm"
+	"github.com/vitali-q/hotels-service/internal/repository"
 )
 
 type HotelService struct {
-	db *gorm.DB
+	repo *repository.HotelRepository
 }
 
-func NewHotelService(db *gorm.DB) *HotelService {
-	return &HotelService{db: db}
+func NewHotelService(repo *repository.HotelRepository) *HotelService {
+	return &HotelService{repo: repo}
 }
 
 func (s *HotelService) CreateHotel(hotel *models.Hotel) (*models.Hotel, error) {
-    if err := s.db.Create(hotel).Error; err != nil {
-        return nil, err
-    }
+	if err := s.repo.CreateHotel(hotel); err != nil {
+		return nil, err
+	}
     return hotel, nil
 }
 
 func (s *HotelService) GetAllHotels() ([]dto.HotelResponse, error) {
-	var hotels []models.Hotel
-
-	if err := s.db.
-		Preload("City").
-		Preload("Country").
-		Find(&hotels).Error; err != nil {
+	hotels, err := s.repo.GetAllHotels()
+	if err != nil {
 		return nil, err
 	}
 
@@ -36,52 +32,44 @@ func (s *HotelService) GetAllHotels() ([]dto.HotelResponse, error) {
 	for _, hotel := range hotels {
 		result = append(result, mapHotelToDTO(hotel))
 	}
-
 	return result, nil
 }
 
 
 func (s *HotelService) GetHotelByID(id uuid.UUID) (*models.Hotel, error) {
-    var hotel models.Hotel
-    if err := s.db.First(&hotel, "id = ?", id).Error; err != nil {
-        return nil, err
-    }
-    return &hotel, nil
+	return s.repo.GetHotelByID(id)
 }
 
 func (s *HotelService) UpdateHotel(id uuid.UUID, newHotel *models.Hotel) (*models.Hotel, error) {
-    var hotel models.Hotel
-    if err := s.db.First(&hotel, "id = ?", id).Error; err != nil {
-        return nil, err
-    }
+	hotel, err := s.repo.GetHotelByID(id)
+	if err != nil {
+		return nil, err
+	}
 
-    if newHotel.Name != nil {
-        hotel.Name = newHotel.Name
-    }
-    if newHotel.Description != nil {
-        hotel.Description = newHotel.Description
-    }
-    if newHotel.Address != nil {
-        hotel.Address = newHotel.Address
-    }
-    if newHotel.CityID != uuid.Nil {
-        hotel.CityID = newHotel.CityID
-    }
-    if newHotel.CountryID != uuid.Nil {
-        hotel.CountryID = newHotel.CountryID
-    }
+	if newHotel.Name != nil {
+		hotel.Name = newHotel.Name
+	}
+	if newHotel.Description != nil {
+		hotel.Description = newHotel.Description
+	}
+	if newHotel.Address != nil {
+		hotel.Address = newHotel.Address
+	}
+	if newHotel.CityID != uuid.Nil {
+		hotel.CityID = newHotel.CityID
+	}
+	if newHotel.CountryID != uuid.Nil {
+		hotel.CountryID = newHotel.CountryID
+	}
 
-    if err := s.db.Save(&hotel).Error; err != nil {
-        return nil, err
-    }
+	if err := s.repo.UpdateHotel(hotel); err != nil {
+		return nil, err
+	}
 
-    return &hotel, nil
+	return hotel, nil
 }
 
 func (s *HotelService) DeleteHotel(id uuid.UUID) error {
-    if err := s.db.Delete(&models.Hotel{}, "id = ?", id).Error; err != nil {
-        return err
-    }
-    return nil
+	return s.repo.DeleteHotel(id)
 }
 
