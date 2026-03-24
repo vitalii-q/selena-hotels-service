@@ -9,26 +9,21 @@ import (
 	"github.com/vitali-q/hotels-service/internal/database"
 	"github.com/vitali-q/hotels-service/internal/handlers"
 	//"gorm.io/driver/postgres"
-	"gorm.io/gorm"
 	//"github.com/sirupsen/logrus"
 )
 
-var DB *gorm.DB
-
 func main() {
-	// Create a new Gin instance
-	//r := gin.Default()  // enables middleware (standard Logger - writes every HTTP request, Recovery)
-
+	// --- Router logs settings ---
 	r := gin.New() // creating a router without the standard logger
 	r.SetTrustedProxies(nil) // secure proxy configuration
-	r.Use(gin.Recovery())
+	r.Use(gin.Recovery())    // Recover from panics to prevent server crash
 
 	r.Use(gin.LoggerWithConfig(gin.LoggerConfig{
 		Output:    gin.DefaultWriter,
 		SkipPaths: []string{
-		"/health/live",
-		"/health/db",    // enabling standard logs at this address
-	},
+			"/health", // health endpoint
+			"/ready",    // enabling standard logs at this address
+		},
 	}))
 
 
@@ -37,6 +32,7 @@ func main() {
 	//	FullTimestamp: true,                       // Beautiful log output
 	//})
 
+	// --- Router routes settings ---
 	r.GET("/", func(c *gin.Context) {
 		c.String(http.StatusOK, "Hello, hotels-service!")
 	})
@@ -50,12 +46,27 @@ func main() {
 
 	//logrus.Debug("qwer1")
 
-	r.GET("/health/live", func(c *gin.Context) {
-		c.String(http.StatusOK, "OK")
-	})
+	r.GET("/health", func(c *gin.Context) { c.String(http.StatusOK, "OK") })
 
 	// Checking the connection to the database
-	r.GET("/health/db", func(c *gin.Context) {
+	r.GET("/ready", DBcheck)
+
+	//logrus.Error("ests")
+	//logrus.Debug("sfds")
+	//logrus.Debug("Hotel service started")
+
+	// API routers
+	api := r.Group("/api/v1")
+	handlers.RegisterHotelRoutes(api)
+	handlers.RegisterLocationRoutes(api)
+
+	// Configure the server to listen on port 8080
+	if err := r.Run(":9064"); err != nil {
+		log.Fatal("Error starting server: ", err)
+	}
+}
+
+func DBcheck(c *gin.Context) {
 		if database.DB == nil {
 			log.Println("database.DB is nil")
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "DB is nil"})
@@ -77,19 +88,4 @@ func main() {
 
 		//log.Println("DB ping successful")
 		c.String(http.StatusOK, "Hotels-service: database connection OK ✅")
-	})
-
-	//logrus.Error("ests")
-	//logrus.Debug("sfds")
-	//logrus.Debug("Hotel service started")
-
-	// API routers
-	api := r.Group("/api/v1")
-	handlers.RegisterHotelRoutes(api)
-	handlers.RegisterLocationRoutes(api)
-
-	// Configure the server to listen on port 8080
-	if err := r.Run(":9064"); err != nil {
-		log.Fatal("Error starting server: ", err)
 	}
-}

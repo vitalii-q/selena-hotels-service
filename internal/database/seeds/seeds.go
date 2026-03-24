@@ -6,8 +6,10 @@ import (
 	"github.com/vitali-q/hotels-service/internal/database"
 )
 
-// RunSeeds launches all seeds for hotels-service
+// RunSeeds launches all seeds for hotels-service:
 // docker exec -it hotels-service go run cmd/seed/main.go
+//
+// The order of seeding: hotels, locations (hotels-service) -> users (users-service) -> bookings (bookings-service)
 func RunSeeds() {
 	log.Println("🌱 Initializing database connection...")
 	if err := database.Init(); err != nil {

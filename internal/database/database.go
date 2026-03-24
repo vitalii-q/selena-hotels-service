@@ -11,6 +11,7 @@ import (
 var DB *gorm.DB
 
 func Init() error {
+	
 	user := os.Getenv("HOTELS_COCKROACH_USER")
 
 	certsDir := "/certs" // default for dev
