@@ -3,6 +3,7 @@ package seeds
 import (
 	"log"
 
+	"github.com/vitali-q/hotels-service/internal/config"
 	"github.com/vitali-q/hotels-service/internal/database"
 )
 
@@ -12,7 +13,7 @@ import (
 // The order of seeding: hotels, locations (hotels-service) -> users (users-service) -> bookings (bookings-service)
 func RunSeeds() {
 	log.Println("🌱 Initializing database connection...")
-	db, err := database.Init(); if err != nil {
+	db, err := database.Init(config.Load()); if err != nil {
 		log.Fatalf("❌ Failed to initialize database: %v", err)
 	}
 

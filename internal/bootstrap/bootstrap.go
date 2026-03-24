@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/vitali-q/hotels-service/internal/config"
 	"github.com/vitali-q/hotels-service/internal/database"
 	"github.com/vitali-q/hotels-service/internal/handlers"
 	"github.com/vitali-q/hotels-service/internal/repository"
@@ -20,7 +21,7 @@ type Dependencies struct {
 func Init() (*Dependencies, error) {
 	// --- Database ---
 	log.Println("🌱 Initializing database...")
-	db, err := database.Init()
+	db, err := database.Init(config.Load())
 	if err != nil {
 		return nil, fmt.Errorf("failed to initialize database: %w", err)
 	}
