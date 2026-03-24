@@ -5,8 +5,8 @@ import (
 )
 
 // Config contains all the application settings
-type Config struct {
-	Env string
+type Env struct {
+	AppEnv string
 
 	Port string
 
@@ -21,9 +21,9 @@ type Config struct {
 }
 
 // Load reads configuration from env variables
-func Load() *Config {
-	cfg := &Config{
-		Env:        os.Getenv("PROJECT_SUFFIX"), // TODO: Remane to APP_ENV
+func Load() *Env {
+	env := &Env{
+		AppEnv:     os.Getenv("APP_ENV"),
 
 		Port:       os.Getenv("HOTELS_SERVICE_PORT"),
 
@@ -36,9 +36,9 @@ func Load() *Config {
 	}
 
 	// --- Validate required configuration --- 
-	if cfg.Port == "" {
+	if env.Port == "" {
 		panic("HOTELS_SERVICE_PORT is not set")
 	}
 
-	return cfg
+	return env
 }

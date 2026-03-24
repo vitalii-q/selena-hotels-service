@@ -19,7 +19,7 @@ func main() {
 	r := router.SetupRouter(deps)
 
 	// --- Start server ---
-	if err := r.Run(":" + deps.Config.Port); err != nil {
+	if err := r.Run(":" + deps.Env.Port); err != nil {
 		log.Fatal("Error starting server: ", err)
 	}
 }
