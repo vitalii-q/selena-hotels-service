@@ -2,22 +2,30 @@ package services
 
 import (
 	"github.com/gofrs/uuid"
-	"github.com/vitali-q/hotels-service/internal/database"
 	"github.com/vitali-q/hotels-service/internal/dto"
 	"github.com/vitali-q/hotels-service/internal/models"
+	"gorm.io/gorm"
 )
 
-func CreateHotel(hotel *models.Hotel) (*models.Hotel, error) {
-    if err := database.DB.Create(hotel).Error; err != nil {
+type HotelService struct {
+	db *gorm.DB
+}
+
+func NewHotelService(db *gorm.DB) *HotelService {
+	return &HotelService{db: db}
+}
+
+func (s *HotelService) CreateHotel(hotel *models.Hotel) (*models.Hotel, error) {
+    if err := s.db.Create(hotel).Error; err != nil {
         return nil, err
     }
     return hotel, nil
 }
 
-func GetAllHotels() ([]dto.HotelResponse, error) {
+func (s *HotelService) GetAllHotels() ([]dto.HotelResponse, error) {
 	var hotels []models.Hotel
 
-	if err := database.DB.
+	if err := s.db.
 		Preload("City").
 		Preload("Country").
 		Find(&hotels).Error; err != nil {
@@ -33,17 +41,17 @@ func GetAllHotels() ([]dto.HotelResponse, error) {
 }
 
 
-func GetHotelByID(id uuid.UUID) (*models.Hotel, error) {
+func (s *HotelService) GetHotelByID(id uuid.UUID) (*models.Hotel, error) {
     var hotel models.Hotel
-    if err := database.DB.First(&hotel, "id = ?", id).Error; err != nil {
+    if err := s.db.First(&hotel, "id = ?", id).Error; err != nil {
         return nil, err
     }
     return &hotel, nil
 }
 
-func UpdateHotel(id uuid.UUID, newHotel *models.Hotel) (*models.Hotel, error) {
+func (s *HotelService) UpdateHotel(id uuid.UUID, newHotel *models.Hotel) (*models.Hotel, error) {
     var hotel models.Hotel
-    if err := database.DB.First(&hotel, "id = ?", id).Error; err != nil {
+    if err := s.db.First(&hotel, "id = ?", id).Error; err != nil {
         return nil, err
     }
 
@@ -63,15 +71,15 @@ func UpdateHotel(id uuid.UUID, newHotel *models.Hotel) (*models.Hotel, error) {
         hotel.CountryID = newHotel.CountryID
     }
 
-    if err := database.DB.Save(&hotel).Error; err != nil {
+    if err := s.db.Save(&hotel).Error; err != nil {
         return nil, err
     }
 
     return &hotel, nil
 }
 
-func DeleteHotel(id uuid.UUID) error {
-    if err := database.DB.Delete(&models.Hotel{}, "id = ?", id).Error; err != nil {
+func (s *HotelService) DeleteHotel(id uuid.UUID) error {
+    if err := s.db.Delete(&models.Hotel{}, "id = ?", id).Error; err != nil {
         return err
     }
     return nil

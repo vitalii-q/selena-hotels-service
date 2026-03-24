@@ -8,6 +8,8 @@ import (
 	_ "github.com/lib/pq" // import registration for side effects
 	"github.com/vitali-q/hotels-service/internal/database"
 	"github.com/vitali-q/hotels-service/internal/handlers"
+	"github.com/vitali-q/hotels-service/internal/services"
+	"gorm.io/gorm"
 	//"gorm.io/driver/postgres"
 	//"github.com/sirupsen/logrus"
 )
@@ -37,9 +39,9 @@ func main() {
 		c.String(http.StatusOK, "Hello, hotels-service!")
 	})
 
-	// Инициализация базы данных через GORM
+	// --- Database initialization ---
 	log.Println("Initializing DB...")
-	if err := database.Init(); err != nil {
+	db, err := database.Init(); if err != nil {
 		log.Fatalf("Failed to connect to DB: %v", err)
 	}
 	log.Println("DB initialized successfully")
@@ -49,16 +51,22 @@ func main() {
 	r.GET("/health", func(c *gin.Context) { c.String(http.StatusOK, "OK") })
 
 	// Checking the connection to the database
-	r.GET("/ready", DBcheck)
+	r.GET("/ready", func(c *gin.Context) {DBcheck(c, db)})
 
 	//logrus.Error("ests")
 	//logrus.Debug("sfds")
 	//logrus.Debug("Hotel service started")
 
+	hotelService := services.NewHotelService(db)
+	hotelHandler := handlers.NewHotelHandler(hotelService)
+
+	locationService := services.NewLocationService(db)
+	locationHandler := handlers.NewLocationHandler(locationService)
+
 	// API routers
 	api := r.Group("/api/v1")
-	handlers.RegisterHotelRoutes(api)
-	handlers.RegisterLocationRoutes(api)
+	handlers.RegisterHotelRoutes(api, hotelHandler)
+	handlers.RegisterLocationRoutes(api, locationHandler)
 
 	// Configure the server to listen on port 8080
 	if err := r.Run(":9064"); err != nil {
@@ -66,14 +74,14 @@ func main() {
 	}
 }
 
-func DBcheck(c *gin.Context) {
-		if database.DB == nil {
+func DBcheck(c *gin.Context, db *gorm.DB) {
+		if db == nil {
 			log.Println("database.DB is nil")
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "DB is nil"})
 			return
     	}
 
-		sqlDB, err := database.DB.DB() // get *sql.DB from GORM
+		sqlDB, err := db.DB() // get *sql.DB from GORM
 		if err != nil {
 			log.Printf("Failed to get raw DB: %v\n", err)
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get raw DB"})

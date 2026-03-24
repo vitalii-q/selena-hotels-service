@@ -7,12 +7,20 @@ import (
 	"github.com/vitali-q/hotels-service/internal/services"
 )
 
-func RegisterLocationRoutes(r *gin.RouterGroup) {
-	r.GET("/locations", GetCountriesWithCities)
+type LocationHandler struct {
+	service *services.LocationService
 }
 
-func GetCountriesWithCities(c *gin.Context) {
-	data, err := services.GetCountriesWithCities()
+func NewLocationHandler(service *services.LocationService) *LocationHandler {
+	return &LocationHandler{service: service}
+}
+
+func RegisterLocationRoutes(r *gin.RouterGroup, h *LocationHandler) {
+	r.GET("/locations", h.GetCountriesWithCities)
+}
+
+func (h *LocationHandler) GetCountriesWithCities(c *gin.Context) {
+	data, err := h.service.GetCountriesWithCities()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "failed to load locations",

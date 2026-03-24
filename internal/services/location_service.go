@@ -1,17 +1,25 @@
 package services
 
 import (
-	"github.com/vitali-q/hotels-service/internal/database"
 	"github.com/vitali-q/hotels-service/internal/dto"
 	"github.com/vitali-q/hotels-service/internal/models"
+	"gorm.io/gorm"
 )
 
+type LocationService struct {
+	db *gorm.DB
+}
+
+func NewLocationService(db *gorm.DB) *LocationService {
+	return &LocationService{db: db}
+}
+
 // GetCountriesWithCities returns countries with their cities
-func GetCountriesWithCities() ([]dto.CountryWithCitiesDTO, error) {
+func (s *LocationService) GetCountriesWithCities() ([]dto.CountryWithCitiesDTO, error) {
 	var countries []models.Country
 
 	// Загружаем страны + связанные города
-	if err := database.DB.Preload("Cities").Find(&countries).Error; err != nil {
+	if err := s.db.Preload("Cities").Find(&countries).Error; err != nil {
 		return nil, err
 	}
 

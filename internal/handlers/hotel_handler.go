@@ -10,26 +10,34 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func RegisterHotelRoutes(r *gin.RouterGroup) {
+type HotelHandler struct {
+	service *services.HotelService
+}
+
+func NewHotelHandler(service *services.HotelService) *HotelHandler {
+	return &HotelHandler{service: service}
+}
+
+func RegisterHotelRoutes(r *gin.RouterGroup, h *HotelHandler) {
     hotels := r.Group("/hotels")
     {
-        hotels.POST("", CreateHotel)
-        hotels.GET("/:id", GetHotelByID)
-        hotels.PUT("/:id", UpdateHotel)
-        hotels.DELETE("/:id", DeleteHotel)
+        hotels.POST("", h.CreateHotel)
+        hotels.GET("/:id", h.GetHotelByID)
+        hotels.PUT("/:id", h.UpdateHotel)
+        hotels.DELETE("/:id", h.DeleteHotel)
 
-        hotels.GET("", GetHotels)
+        hotels.GET("", h.GetHotels)
     }
 }
 
-func CreateHotel(c *gin.Context) {
+func (h *HotelHandler) CreateHotel(c *gin.Context) {
     var hotel models.Hotel
     if err := c.ShouldBindJSON(&hotel); err != nil {
         c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
         return
     }
 
-    createdHotel, err := services.CreateHotel(&hotel)
+    createdHotel, err := h.service.CreateHotel(&hotel)
     if err != nil {
         c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
         return
@@ -38,7 +46,7 @@ func CreateHotel(c *gin.Context) {
     c.JSON(http.StatusCreated, createdHotel)
 }
 
-func GetHotelByID(c *gin.Context) {
+func (h *HotelHandler) GetHotelByID(c *gin.Context) {
     uuidParam := c.Param("id")
     hotelID, err := uuid.FromString(uuidParam)
     if err != nil {
@@ -46,7 +54,7 @@ func GetHotelByID(c *gin.Context) {
         return
     }
 
-    hotel, err := services.GetHotelByID(hotelID)
+    hotel, err := h.service.GetHotelByID(hotelID)
     if err != nil {
         c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
         return
@@ -56,7 +64,7 @@ func GetHotelByID(c *gin.Context) {
 }
 
 
-func UpdateHotel(c *gin.Context) {
+func (h *HotelHandler) UpdateHotel(c *gin.Context) {
     uuidParam := c.Param("id")
     hotelID, err := uuid.FromString(uuidParam)
     if err != nil {
@@ -70,7 +78,7 @@ func UpdateHotel(c *gin.Context) {
         return
     }
 
-    updatedHotel, err := services.UpdateHotel(hotelID, &hotel)
+    updatedHotel, err := h.service.UpdateHotel(hotelID, &hotel)
     if err != nil {
         c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
         return
@@ -80,7 +88,7 @@ func UpdateHotel(c *gin.Context) {
 }
 
 
-func DeleteHotel(c *gin.Context) {
+func (h *HotelHandler) DeleteHotel(c *gin.Context) {
     uuidParam := c.Param("id")
     hotelID, err := uuid.FromString(uuidParam)
     if err != nil {
@@ -88,7 +96,7 @@ func DeleteHotel(c *gin.Context) {
         return
     }
 
-    err = services.DeleteHotel(hotelID)
+    err = h.service.DeleteHotel(hotelID)
     if err != nil {
         c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
         return
@@ -97,8 +105,8 @@ func DeleteHotel(c *gin.Context) {
     c.Status(http.StatusNoContent)
 }
 
-func GetHotels(c *gin.Context) {
-	hotels, err := services.GetAllHotels()
+func (h *HotelHandler) GetHotels(c *gin.Context) {
+	hotels, err := h.service.GetAllHotels()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

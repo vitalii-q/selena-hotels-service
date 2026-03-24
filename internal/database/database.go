@@ -8,10 +8,8 @@ import (
 	"gorm.io/gorm"
 )
 
-var DB *gorm.DB
+func Init() (*gorm.DB, error) {
 
-func Init() error {
-	
 	user := os.Getenv("HOTELS_COCKROACH_USER")
 
 	certsDir := "/certs" // default for dev
@@ -37,19 +35,18 @@ func Init() error {
 
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
-		return fmt.Errorf("gorm open failed: %w", err)
+		return nil, fmt.Errorf("gorm open failed: %w", err)
 	}
 
 	sqlDB, err := db.DB()
 	if err != nil {
-		return fmt.Errorf("failed to get sql.DB: %w", err)
+		return nil, fmt.Errorf("failed to get sql.DB: %w", err)
 	}
 	
 	if err := sqlDB.Ping(); err != nil {
-		return fmt.Errorf("ping failed: %w", err)
+		return nil, fmt.Errorf("ping failed: %w", err)
 	}
 
-	DB = db
-	return nil
+	return db, nil
 }
 

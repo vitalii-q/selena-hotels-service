@@ -12,19 +12,19 @@ import (
 // The order of seeding: hotels, locations (hotels-service) -> users (users-service) -> bookings (bookings-service)
 func RunSeeds() {
 	log.Println("🌱 Initializing database connection...")
-	if err := database.Init(); err != nil {
+	db, err := database.Init(); if err != nil {
 		log.Fatalf("❌ Failed to initialize database: %v", err)
 	}
 
 	log.Println("🌱 Seeding countries...")
-	countries := SeedCountries(database.DB)
+	countries := SeedCountries(db)
 	//log.Printf("🌱 Countries map: %+v\n", countries)
 
 	log.Println("🌱 Seeding cities...")
-	cities := SeedCities(database.DB, countries)
+	cities := SeedCities(db, countries)
 
 	log.Println("🌱 Starting hotel seeds...")
-	if err := SeedHotels(database.DB, cities, countries); err != nil {
+	if err := SeedHotels(db, cities, countries); err != nil {
 		log.Fatalf("❌ Failed to seed hotels: %v", err)
 	}
 
