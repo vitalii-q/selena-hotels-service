@@ -1,7 +1,7 @@
 root = "/app"
 
 [build]
-  cmd = "mkdir -p tmp && go build -o tmp/hotels-service main.go"
+  cmd = "mkdir -p tmp && go build -o tmp/hotels-service main.go && chmod +x tmp/hotels-service"
   bin = "./tmp/hotels-service"
   include_ext = ["go", "sql"]
   
@@ -13,7 +13,8 @@ root = "/app"
     "logs"
   ]
   
-  delay = 2000
+  delay = 3000
+  kill_delay = 1000   # wait before restarting process
   stop_on_error = true
 
 [log]
