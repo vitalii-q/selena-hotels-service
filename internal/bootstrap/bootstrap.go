@@ -11,15 +11,13 @@ import (
 	"gorm.io/gorm"
 )
 
-type AppDependencies struct {
-	DB             *gorm.DB
-	HotelService   *services.HotelService
-	HotelHandler   *handlers.HotelHandler
-	LocationService *services.LocationService
+type Dependencies struct {
+	DB              *gorm.DB
+	HotelHandler    *handlers.HotelHandler
 	LocationHandler *handlers.LocationHandler
 }
 
-func Init() (*AppDependencies, error) {
+func Init() (*Dependencies, error) {
 	// --- Database ---
 	log.Println("🌱 Initializing database...")
 	db, err := database.Init()
@@ -28,20 +26,20 @@ func Init() (*AppDependencies, error) {
 	}
 	log.Println("✅ Database initialized")
 
-	// --- Hotel DI ---
+	// --- Repositories ---
 	hotelRepo := repository.NewHotelRepository(db)
-	hotelService := services.NewHotelService(hotelRepo)
-	hotelHandler := handlers.NewHotelHandler(hotelService)
 
-	// --- Location DI ---
+	// --- Services ---
+	hotelService := services.NewHotelService(hotelRepo)
 	locationService := services.NewLocationService(db)
+
+	// --- Handlers ---
+	hotelHandler := handlers.NewHotelHandler(hotelService)
 	locationHandler := handlers.NewLocationHandler(locationService)
 
-	return &AppDependencies{
+	return &Dependencies{
 		DB:              db,
-		HotelService:    hotelService,
 		HotelHandler:    hotelHandler,
-		LocationService: locationService,
 		LocationHandler: locationHandler,
 	}, nil
 }

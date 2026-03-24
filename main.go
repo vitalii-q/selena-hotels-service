@@ -7,45 +7,21 @@ import (
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq" // import registration for side effects
 	"github.com/vitali-q/hotels-service/internal/bootstrap"
-	"github.com/vitali-q/hotels-service/internal/handlers"
+	"github.com/vitali-q/hotels-service/internal/router"
 	"gorm.io/gorm"
 	//"gorm.io/driver/postgres"
 	//"github.com/sirupsen/logrus"
 )
 
 func main() {
-	// --- Router logs settings ---
-	r := gin.New() // creating a router without the standard logger
-	r.SetTrustedProxies(nil) // secure proxy configuration
-	r.Use(gin.Recovery())    // Recover from panics to prevent server crash
-
-	r.Use(gin.LoggerWithConfig(gin.LoggerConfig{
-		Output:    gin.DefaultWriter,
-		SkipPaths: []string{
-			"/health", // health endpoint
-			"/ready",    // enabling standard logs at this address
-		},
-	}))
-
 	// --- Bootstrap all dependencies ---
 	deps, err := bootstrap.Init()
 	if err != nil {
 		log.Fatalf("Failed to bootstrap app: %v", err)
 	}
 
-	// --- Router routes settings ---
-	r.GET("/", func(c *gin.Context) {
-		c.String(http.StatusOK, "Hello, hotels-service!")
-	})
-
-// --- Health / Ready ---
-	r.GET("/health", func(c *gin.Context) { c.String(http.StatusOK, "OK") })
-	r.GET("/ready", func(c *gin.Context) {DBcheck(c, deps.DB)})
-
-	// --- API routes ---
-	api := r.Group("/api/v1")
-	handlers.RegisterHotelRoutes(api, deps.HotelHandler)
-	handlers.RegisterLocationRoutes(api, deps.LocationHandler)
+	// --- Setup router ---
+	r := router.SetupRouter(deps)
 
 	// --- Start server ---
 	if err := r.Run(":9064"); err != nil {
