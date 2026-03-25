@@ -19,7 +19,7 @@ func main() {
 	// --- Setup router ---
 	r := router.SetupRouter(deps)
 
-		// --- Create HTTP server ---
+	// --- Create HTTP server ---
 	srv := server.NewHTTPServer(deps.Env.Port, r)
 
 	// --- Run server with graceful shutdown ---

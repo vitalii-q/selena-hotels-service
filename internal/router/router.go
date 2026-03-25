@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/vitali-q/hotels-service/internal/bootstrap"
 	"github.com/vitali-q/hotels-service/internal/handlers"
+	"github.com/vitali-q/hotels-service/internal/server/middleware"
 )
 
 func SetupRouter(deps *bootstrap.Dependencies) *gin.Engine {
@@ -13,17 +14,10 @@ func SetupRouter(deps *bootstrap.Dependencies) *gin.Engine {
 	r := gin.New() // creating a router without the standard logger
 	r.SetTrustedProxies(nil) // secure proxy configuration
 
-	// --- Error recovery ---
-	r.Use(gin.Recovery()) // Recover from panics and log stack trace
-
-	// --- Access logs configuration ---
-	r.Use(gin.LoggerWithConfig(gin.LoggerConfig{
-		Output:    gin.DefaultWriter,
-		SkipPaths: []string{
-			"/health", // health endpoint
-			"/ready",    // enabling standard logs at this address
-		},
-	}))
+	// --- Middleware ---
+	r.Use(middleware.RequestID())
+	r.Use(middleware.Logger())
+	r.Use(middleware.Recovery())
 
 	// --- Root ---
 	r.GET("/", func(c *gin.Context) {
