@@ -6,6 +6,7 @@ import (
 	_ "github.com/lib/pq" // import registration for side effects
 	"github.com/vitali-q/hotels-service/internal/bootstrap"
 	"github.com/vitali-q/hotels-service/internal/router"
+	"github.com/vitali-q/hotels-service/internal/server"
 )
 
 func main() {
@@ -18,8 +19,9 @@ func main() {
 	// --- Setup router ---
 	r := router.SetupRouter(deps)
 
-	// --- Start server ---
-	if err := r.Run(":" + deps.Env.Port); err != nil {
-		log.Fatal("Error starting server: ", err)
-	}
+		// --- Create HTTP server ---
+	srv := server.NewHTTPServer(deps.Env.Port, r)
+
+	// --- Run server with graceful shutdown ---
+	server.Run(srv)
 }

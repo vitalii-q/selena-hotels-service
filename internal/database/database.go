@@ -10,7 +10,10 @@ import (
 
 func Init(env *config.Env) (*gorm.DB, error) {
 	certsDir := "/certs-cloud" // default for prod
+	//fmt.Println("env.AppEnv:", env.AppEnv)
+	//fmt.Println("env.DBHost:", env.DBHost)
 	if env.AppEnv == "dev" {
+		//fmt.Println("env.AppEnv2:", env.AppEnv)
 		certsDir = "/certs"
 	}
 

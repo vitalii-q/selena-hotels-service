@@ -6,16 +6,16 @@ import (
 
 // Config contains all the application settings
 type Env struct {
-	AppEnv string
+	AppEnv        string
 
-	Port string
+	Port          string
 
-	DBHost     string
-	DBUser     string
-	DBPassword string
-	DBName     string
-	DBPort     string
-	DBSSLMode  string
+	DBHost        string
+	DBUser        string
+	DBPassword    string
+	DBName        string
+	DBPort        string
+	DBSSLMode     string
 
 	ProjectSuffix string
 }
