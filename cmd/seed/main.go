@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/vitali-q/hotels-service/internal/database/seeds"
+	"github.com/vitali-q/selena-hotels-service/internal/database/seeds"
 )
 
 func main() {

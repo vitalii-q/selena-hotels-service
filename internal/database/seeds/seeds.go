@@ -3,8 +3,8 @@ package seeds
 import (
 	"log"
 
-	"github.com/vitali-q/hotels-service/internal/config"
-	"github.com/vitali-q/hotels-service/internal/database"
+	"github.com/vitali-q/selena-hotels-service/internal/config"
+	"github.com/vitali-q/selena-hotels-service/internal/database"
 )
 
 // RunSeeds launches all seeds for hotels-service:

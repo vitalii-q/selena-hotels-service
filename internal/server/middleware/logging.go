@@ -9,7 +9,6 @@ import (
 
 // Logger logs HTTP requests
 func Logger() gin.HandlerFunc {
-
 	skipPaths := map[string]struct{}{   // map is faster than []string
 		"/health": {},
 		"/ready":  {},

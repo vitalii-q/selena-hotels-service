@@ -14,6 +14,16 @@ func SetupRouter(deps *bootstrap.Dependencies) *gin.Engine {
 	r := gin.New() // creating a router without the standard logger
 	r.SetTrustedProxies(nil) // secure proxy configuration
 
+	// TODO: Zap logger
+	// --- Access logs configuration ---
+	/*r.Use(gin.LoggerWithConfig(gin.LoggerConfig{
+		Output:    gin.DefaultWriter,
+		SkipPaths: []string{
+			"/health", // health endpoint
+			"/ready",    // enabling standard logs at this address
+		},
+	}))*/
+
 	// --- Middleware ---
 	r.Use(middleware.RequestID())
 	r.Use(middleware.Logger())

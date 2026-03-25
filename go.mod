@@ -1,4 +1,4 @@
-module github.com/vitali-q/hotels-service
+module github.com/vitali-q/selena-hotels-service
 
 go 1.23.6
 

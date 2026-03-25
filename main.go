@@ -4,9 +4,9 @@ import (
 	"log"
 
 	_ "github.com/lib/pq" // import registration for side effects
-	"github.com/vitali-q/hotels-service/internal/bootstrap"
-	"github.com/vitali-q/hotels-service/internal/router"
-	"github.com/vitali-q/hotels-service/internal/server"
+	"github.com/vitali-q/selena-hotels-service/internal/bootstrap"
+	"github.com/vitali-q/selena-hotels-service/internal/router"
+	"github.com/vitali-q/selena-hotels-service/internal/server"
 )
 
 func main() {
