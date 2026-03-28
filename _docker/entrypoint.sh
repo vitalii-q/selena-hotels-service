@@ -12,6 +12,7 @@ else
 fi
 
 echo "Using environment: $APP_ENV"
+echo "HOTELS_SERVICE_PORT: $HOTELS_SERVICE_PORT"
 
 # Ожидание доступности порта
 echo "⏳ Waiting for CockroachDB at ${HOTELS_COCKROACH_HOST}:${HOTELS_COCKROACH_PORT_INNER}..."

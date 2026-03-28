@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/vitali-q/hotels-service/internal/config"
-	"github.com/vitali-q/hotels-service/internal/database"
-	"github.com/vitali-q/hotels-service/internal/handlers"
-	"github.com/vitali-q/hotels-service/internal/repository"
-	"github.com/vitali-q/hotels-service/internal/services"
+	"github.com/vitali-q/selena-hotels-service/internal/config"
+	"github.com/vitali-q/selena-hotels-service/internal/database"
+	"github.com/vitali-q/selena-hotels-service/internal/handlers"
+	"github.com/vitali-q/selena-hotels-service/internal/repository"
+	"github.com/vitali-q/selena-hotels-service/internal/services"
 	"gorm.io/gorm"
 )
 

@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/vitali-q/hotels-service/internal/services"
+	"github.com/vitali-q/selena-hotels-service/internal/services"
 )
 
 type LocationHandler struct {

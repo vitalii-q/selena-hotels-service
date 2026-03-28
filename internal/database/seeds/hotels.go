@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/gofrs/uuid"
-	"github.com/vitali-q/hotels-service/internal/models"
+	"github.com/vitali-q/selena-hotels-service/internal/models"
 	"gorm.io/datatypes"
 	"gorm.io/gorm"
 )

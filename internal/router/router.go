@@ -4,9 +4,9 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/vitali-q/hotels-service/internal/bootstrap"
-	"github.com/vitali-q/hotels-service/internal/handlers"
-	"github.com/vitali-q/hotels-service/internal/server/middleware"
+	"github.com/vitali-q/selena-hotels-service/internal/bootstrap"
+	"github.com/vitali-q/selena-hotels-service/internal/handlers"
+	"github.com/vitali-q/selena-hotels-service/internal/server/middleware"
 )
 
 func SetupRouter(deps *bootstrap.Dependencies) *gin.Engine {

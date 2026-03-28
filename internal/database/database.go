@@ -3,7 +3,7 @@ package database
 import (
 	"fmt"
 
-	"github.com/vitali-q/hotels-service/internal/config"
+	"github.com/vitali-q/selena-hotels-service/internal/config"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )

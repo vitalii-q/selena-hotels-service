@@ -1,8 +1,8 @@
 package services
 
 import (
-	"github.com/vitali-q/hotels-service/internal/dto"
-	"github.com/vitali-q/hotels-service/internal/models"
+	"github.com/vitali-q/selena-hotels-service/internal/dto"
+	"github.com/vitali-q/selena-hotels-service/internal/models"
 )
 
 func mapHotelToDTO(hotel models.Hotel) dto.HotelResponse {

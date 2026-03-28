@@ -2,9 +2,9 @@ package services
 
 import (
 	"github.com/gofrs/uuid"
-	"github.com/vitali-q/hotels-service/internal/dto"
-	"github.com/vitali-q/hotels-service/internal/models"
-	"github.com/vitali-q/hotels-service/internal/repository"
+	"github.com/vitali-q/selena-hotels-service/internal/dto"
+	"github.com/vitali-q/selena-hotels-service/internal/models"
+	"github.com/vitali-q/selena-hotels-service/internal/repository"
 )
 
 type HotelService struct {
