@@ -21,11 +21,11 @@ type Dependencies struct {
 
 func Init() (*Dependencies, error) {
 	// --- Configs from .env file ---
-	env := config.Load()
+	env := config.LoadEnv()
 
 	// --- Database ---
 	log.Println("🌱 Initializing database...")
-	db, err := database.Init(config.Load())
+	db, err := database.Init(env)
 	if err != nil {
 		return nil, fmt.Errorf("failed to initialize database: %w", err)
 	}
