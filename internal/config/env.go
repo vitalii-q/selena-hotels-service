@@ -21,7 +21,7 @@ type Env struct {
 }
 
 // Load reads configuration from env variables
-func Load() *Env {
+func LoadEnv() *Env {
 	env := &Env{
 		AppEnv:     os.Getenv("APP_ENV"),
 
