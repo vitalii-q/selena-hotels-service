@@ -1,15 +1,15 @@
-🧩 Selena Hotels Service
+# 🧩 Selena Hotels Service
 
 <!--![Docker](https://img.shields.io/badge/Docker-Containers-blue)-->
 ![CI/CD](https://img.shields.io/badge/CI/CD-GitHub_actions-c01c1c)
 
 ---
 
-📌 Overview
+## 📌 Overview
 
 hotels-service is a backend microservice responsible for managing hotel data within the Selena platform.
 
-It is designed to run in a cloud-native AWS environment, fully integrated with:
+It is designed to run in a cloud-native **AWS** environment, fully integrated with:
 
 - Auto Scaling infrastructure
 - Internal service networking
@@ -24,7 +24,7 @@ The service exposes REST API endpoints for:
 
 ---
 
-🚀 Key Characteristics
+## 🚀 Key Characteristics
 
 - Stateless service (horizontal scaling ready)
 - Runs inside Docker containers
@@ -35,11 +35,11 @@ The service exposes REST API endpoints for:
 
 ---
 
-☁️ Cloud Integration (AWS)
+## ☁️ Cloud Integration (AWS)
 
 <!--This service is tightly coupled with the Selena AWS infrastructure.-->
 
-🔗 Networking
+### 🔗 Networking
 
 - Runs inside private subnets
 - No direct public access
@@ -47,44 +47,44 @@ The service exposes REST API endpoints for:
     - Public ALB (external requests)
     - Internal ALB (service-to-service)
 
+<br>
 
+### ⚖️ Load Balancing
 
-⚖️ Load Balancing
-
-Public endpoint
+#### Public endpoint
 - https://hotels-service.selena-aws.com
 
-Internal endpoint
+#### Internal endpoint
 - http://hotels.internal.selena
 
+<br>
 
-
-💻 Compute
+### 💻 Compute
 
 - EC2 instances managed by Auto Scaling Group
 
-Scaling configuration:
+#### Scaling configuration:
 - min: 1
 - max: 3
 
-Each instance runs:
+#### Each instance runs:
 - Docker container with hotels-service
 
+<br>
 
-
-📦 Containerization
+### 📦 Containerization
 
 - Built via Dockerfile
 - Stored in Amazon ECR
 - Pulled dynamically on EC2 startup
 
+<br>
 
-
-🔐 Secrets Management
+### 🔐 Secrets Management
 
 Secrets are NOT stored in the repository.
 
-They are injected at runtime via:
+#### They are injected at runtime via:
 
 - AWS Secrets Manager
 
@@ -92,21 +92,21 @@ Includes:
 - database credentials
 - service configuration
 
+<br>
 
-
-🗄️ Database
+### 🗄️ Database
 
 - Uses CockroachDB (self-managed on EC2)
 
-Connection characteristics:
+#### Connection characteristics:
 
 - Private network only
 - TLS certificates (stored in db/certs/)
 - Access controlled via IAM + SSM
 
+<br>
 
-
-⚙️ Service Bootstrap (EC2 UserData)
+### ⚙️ Service Bootstrap (EC2 UserData)
 
 On instance startup:
 - Docker is initialized
