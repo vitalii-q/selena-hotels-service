@@ -44,8 +44,8 @@ The service exposes REST API endpoints for:
 - Runs inside private subnets
 - No direct public access
 - Receives traffic only from:
-    - Public ALB (external requests)
-    - Internal ALB (service-to-service)
+    -- Public ALB (external requests)
+    -- Internal ALB (service-to-service)
 
 <br>
 
@@ -117,7 +117,7 @@ On instance startup:
 
 ---
 
-🧱 Project Structure
+## 🧱 Project Structure
 
     hotels-service/
     ├── cmd/                    # Application entrypoints
@@ -140,39 +140,39 @@ On instance startup:
 
 ---
 
-⚙️ Local Development
+## ⚙️ Local Development
 
-1. Run service locally
+#### 1. Run service locally
 
 go run main.go
 
-2. Run with Docker
+#### 2. Run with Docker
 
 docker build -t hotels-service .
 docker run -p 8080:8080 hotels-service
 
-3. Run migrations
+#### 3. Run migrations
 
 cd db
 ./migrate.sh
 
 ---
 
-🔗 Service Communication
+## 🔗 Service Communication
 
-Inside AWS, services communicate via:
+#### Inside AWS, services communicate via:
 
 - Internal ALB
 - Private DNS
 
-Example:
+#### Example:
 
 - users-service → hotels-service
   http://hotels.internal.selena
 
 ---
 
-🔐 Security
+## 🔐 Security
 
 - No hardcoded secrets
 - Private networking only
@@ -181,7 +181,7 @@ Example:
 
 ---
 
-📊 Health Checks
+## 📊 Health Checks
 
 Handled by AWS Application Load Balancer:
 
@@ -190,7 +190,7 @@ Handled by AWS Application Load Balancer:
 <!--
 ---
 
-🚀 Deployment Flow
+## 🚀 Deployment Flow
 
 - Code pushed to GitHub
 - CI/CD builds Docker image
@@ -201,7 +201,7 @@ Handled by AWS Application Load Balancer:
 
 ---
 
-⚠️ Notes
+## ⚠️ Notes
 
 - Service is designed for cloud-first deployment
 - Local run is only for development
