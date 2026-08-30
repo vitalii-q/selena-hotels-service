@@ -10,6 +10,7 @@ require (
 	github.com/google/go-cmp v0.6.0 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/kr/pretty v0.3.1 // indirect
+	github.com/shopspring/decimal v1.4.0 // indirect
 	gorm.io/driver/mysql v1.5.6 // indirect
 )
 
