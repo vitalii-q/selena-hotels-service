@@ -45,7 +45,8 @@
 
 ## Known MVP Gaps
 
-- There is no room model, room table, or room CRUD API.
+- The Room domain model, repository, service layer, and database migration are
+  present, but no room HTTP API exists yet.
 - There is no availability search by date/guest count.
 - There is no room reservation or release API for bookings-service.
 - Hotel price currently uses a floating-point field and must not be used as the
