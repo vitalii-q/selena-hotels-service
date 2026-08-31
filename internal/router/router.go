@@ -11,7 +11,7 @@ import (
 
 func SetupRouter(deps *bootstrap.Dependencies) *gin.Engine {
 	// --- Router initialization ---
-	r := gin.New() // creating a router without the standard logger
+	r := gin.New()           // creating a router without the standard logger
 	r.SetTrustedProxies(nil) // secure proxy configuration
 
 	// TODO: Zap logger
@@ -43,6 +43,7 @@ func SetupRouter(deps *bootstrap.Dependencies) *gin.Engine {
 
 	handlers.RegisterHotelRoutes(api, deps.HotelHandler)
 	handlers.RegisterLocationRoutes(api, deps.LocationHandler)
+	handlers.RegisterRoomRoutes(api, deps.RoomHandler)
 
 	return r
 }

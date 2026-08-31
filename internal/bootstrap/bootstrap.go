@@ -17,6 +17,7 @@ type Dependencies struct {
 	Env             *config.Env
 	HotelHandler    *handlers.HotelHandler
 	LocationHandler *handlers.LocationHandler
+	RoomHandler     *handlers.RoomHandler
 }
 
 func Init() (*Dependencies, error) {
@@ -33,19 +34,23 @@ func Init() (*Dependencies, error) {
 
 	// --- Repositories ---
 	hotelRepo := repository.NewHotelRepository(db)
+	roomRepo := repository.NewRoomRepository(db)
 
 	// --- Services ---
 	hotelService := services.NewHotelService(hotelRepo)
+	roomService := services.NewRoomService(roomRepo, hotelRepo, roomRepo)
 	locationService := services.NewLocationService(db)
 
 	// --- Handlers ---
 	hotelHandler := handlers.NewHotelHandler(hotelService)
 	locationHandler := handlers.NewLocationHandler(locationService)
+	roomHandler := handlers.NewRoomHandler(roomService)
 
 	return &Dependencies{
 		DB:              db,
 		Env:             env,
 		HotelHandler:    hotelHandler,
 		LocationHandler: locationHandler,
+		RoomHandler:     roomHandler,
 	}, nil
 }
