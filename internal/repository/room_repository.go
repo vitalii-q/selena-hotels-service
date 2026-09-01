@@ -43,3 +43,17 @@ func (r *RoomRepository) UpdateRoom(room *models.Room) error {
 func (r *RoomRepository) DeleteRoom(id uuid.UUID) error {
 	return r.db.Delete(&models.Room{}, "id = ?", id).Error
 }
+
+// HasActiveReservations checks reservations when the reservation table exists.
+func (r *RoomRepository) HasActiveReservations(id uuid.UUID) (bool, error) {
+	var tableExists bool
+	if err := r.db.Raw("SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'room_reservations')").Scan(&tableExists).Error; err != nil {
+		return false, err
+	}
+	if !tableExists {
+		return false, nil
+	}
+	var exists bool
+	err := r.db.Raw("SELECT EXISTS (SELECT 1 FROM room_reservations WHERE room_id = ? AND status = 'ACTIVE')", id).Scan(&exists).Error
+	return exists, err
+}

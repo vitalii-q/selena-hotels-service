@@ -36,6 +36,14 @@ func (r *HotelRepository) GetHotelByID(id uuid.UUID) (*models.Hotel, error) {
 	return &hotel, nil
 }
 
+func (r *HotelRepository) Exists(id uuid.UUID) (bool, error) {
+	var count int64
+	if err := r.db.Model(&models.Hotel{}).Where("id = ?", id).Count(&count).Error; err != nil {
+		return false, err
+	}
+	return count > 0, nil
+}
+
 // UpdateHotel updates a hotel
 func (r *HotelRepository) UpdateHotel(hotel *models.Hotel) error {
 	return r.db.Save(hotel).Error

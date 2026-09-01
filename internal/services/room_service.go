@@ -10,6 +10,9 @@ import (
 )
 
 var (
+	ErrRoomNotFound             = errors.New("room not found")
+	ErrHotelNotFound            = errors.New("hotel not found")
+	ErrActiveReservations       = errors.New("room has active reservations")
 	ErrRoomHotelRequired        = errors.New("room hotel ID is required")
 	ErrRoomNumberRequired       = errors.New("room number is required")
 	ErrRoomTypeRequired         = errors.New("room type is required")
@@ -25,17 +28,44 @@ type RoomRepository interface {
 	DeleteRoom(id uuid.UUID) error
 }
 
-type RoomService struct {
-	repo RoomRepository
+type HotelLookup interface {
+	Exists(id uuid.UUID) (bool, error)
+}
+type ActiveReservationChecker interface {
+	HasActiveReservations(id uuid.UUID) (bool, error)
 }
 
-func NewRoomService(repo RoomRepository) *RoomService {
-	return &RoomService{repo: repo}
+type RoomService struct {
+	repo               RoomRepository
+	hotelLookup        HotelLookup
+	reservationChecker ActiveReservationChecker
+}
+
+func NewRoomService(repo RoomRepository, lookups ...interface{}) *RoomService {
+	s := &RoomService{repo: repo}
+	for _, lookup := range lookups {
+		switch v := lookup.(type) {
+		case HotelLookup:
+			s.hotelLookup = v
+		case ActiveReservationChecker:
+			s.reservationChecker = v
+		}
+	}
+	return s
 }
 
 func (s *RoomService) CreateRoom(room *models.Room) (*models.Room, error) {
 	if err := validateRoom(room); err != nil {
 		return nil, err
+	}
+	if s.hotelLookup != nil {
+		exists, err := s.hotelLookup.Exists(room.HotelID)
+		if err != nil {
+			return nil, err
+		}
+		if !exists {
+			return nil, ErrHotelNotFound
+		}
 	}
 
 	if err := s.repo.CreateRoom(room); err != nil {
@@ -66,6 +96,15 @@ func (s *RoomService) UpdateRoom(room *models.Room) (*models.Room, error) {
 }
 
 func (s *RoomService) DeleteRoom(id uuid.UUID) error {
+	if s.reservationChecker != nil {
+		has, err := s.reservationChecker.HasActiveReservations(id)
+		if err != nil {
+			return err
+		}
+		if has {
+			return ErrActiveReservations
+		}
+	}
 	return s.repo.DeleteRoom(id)
 }
 
