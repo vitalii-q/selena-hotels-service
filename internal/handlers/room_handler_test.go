@@ -4,6 +4,7 @@ import (
 	"net/http/httptest"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gofrs/uuid"
@@ -35,6 +36,15 @@ func (s *roomServiceStub) GetRoomsByHotelID(uuid.UUID) ([]models.Room, error) {
 }
 func (s *roomServiceStub) UpdateRoom(r *models.Room) (*models.Room, error) { return r, s.err }
 func (s *roomServiceStub) DeleteRoom(uuid.UUID) error                      { s.deleted = true; return s.err }
+func (s *roomServiceStub) GetAvailableRooms(uuid.UUID, time.Time, time.Time, int) ([]models.Room, error) {
+	if s.err != nil {
+		return nil, s.err
+	}
+	if s.room == nil {
+		return []models.Room{}, nil
+	}
+	return []models.Room{*s.room}, nil
+}
 
 func TestRoomHandlerCreateRoom(t *testing.T) {
 	gin.SetMode(gin.TestMode)
@@ -59,4 +69,17 @@ func TestRoomHandlerDeleteConflict(t *testing.T) {
 	w := httptest.NewRecorder()
 	r.ServeHTTP(w, httptest.NewRequest("DELETE", "/api/v1/rooms/"+id.String(), nil))
 	require.Equal(t, 409, w.Code)
+}
+
+func TestRoomHandlerGetAvailableRooms(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	roomID := uuid.Must(uuid.NewV4())
+	stub := &roomServiceStub{room: &models.Room{ID: roomID, HotelID: uuid.Must(uuid.NewV4()), Number: "101", Type: "standard", Capacity: 2, PricePerNight: decimal.NewFromInt(100), Active: true}}
+	r := gin.New()
+	RegisterRoomRoutes(r.Group("/api/v1"), NewRoomHandler(stub))
+	w := httptest.NewRecorder()
+	hotelID := uuid.Must(uuid.NewV4())
+	request := httptest.NewRequest("GET", "/api/v1/rooms/available?hotelId="+hotelID.String()+"&checkInDate=2026-09-10&checkOutDate=2026-09-12&guests=2", nil)
+	r.ServeHTTP(w, request)
+	require.Equal(t, 200, w.Code)
 }

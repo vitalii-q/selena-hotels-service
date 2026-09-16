@@ -3,6 +3,7 @@ package services
 import (
 	"errors"
 	"testing"
+	"time"
 
 	"github.com/gofrs/uuid"
 	"github.com/shopspring/decimal"
@@ -32,6 +33,10 @@ func (r *roomRepositoryStub) UpdateRoom(room *models.Room) error {
 
 func (r *roomRepositoryStub) DeleteRoom(id uuid.UUID) error {
 	return errors.New("not implemented")
+}
+
+func (r *roomRepositoryStub) GetAvailableRooms(hotelID uuid.UUID, checkInDate, checkOutDate time.Time, guests int) ([]models.Room, error) {
+	return []models.Room{}, nil
 }
 
 func TestCreateRoomRejectsInvalidPrice(t *testing.T) {

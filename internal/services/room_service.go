@@ -3,6 +3,7 @@ package services
 import (
 	"errors"
 	"strings"
+	"time"
 
 	"github.com/gofrs/uuid"
 	"github.com/shopspring/decimal"
@@ -10,14 +11,16 @@ import (
 )
 
 var (
-	ErrRoomNotFound             = errors.New("room not found")
-	ErrHotelNotFound            = errors.New("hotel not found")
-	ErrActiveReservations       = errors.New("room has active reservations")
-	ErrRoomHotelRequired        = errors.New("room hotel ID is required")
-	ErrRoomNumberRequired       = errors.New("room number is required")
-	ErrRoomTypeRequired         = errors.New("room type is required")
-	ErrRoomCapacityInvalid      = errors.New("room capacity must be greater than zero")
-	ErrRoomPricePerNightInvalid = errors.New("room price per night must be greater than zero")
+	ErrRoomNotFound              = errors.New("room not found")
+	ErrHotelNotFound             = errors.New("hotel not found")
+	ErrActiveReservations        = errors.New("room has active reservations")
+	ErrRoomHotelRequired         = errors.New("room hotel ID is required")
+	ErrRoomNumberRequired        = errors.New("room number is required")
+	ErrRoomTypeRequired          = errors.New("room type is required")
+	ErrRoomCapacityInvalid       = errors.New("room capacity must be greater than zero")
+	ErrRoomPricePerNightInvalid  = errors.New("room price per night must be greater than zero")
+	ErrAvailabilityDatesInvalid  = errors.New("check-out date must be after check-in date")
+	ErrAvailabilityGuestsInvalid = errors.New("guests must be greater than zero")
 )
 
 type RoomRepository interface {
@@ -26,6 +29,7 @@ type RoomRepository interface {
 	GetRoomsByHotelID(hotelID uuid.UUID) ([]models.Room, error)
 	UpdateRoom(room *models.Room) error
 	DeleteRoom(id uuid.UUID) error
+	GetAvailableRooms(hotelID uuid.UUID, checkInDate, checkOutDate time.Time, guests int) ([]models.Room, error)
 }
 
 type HotelLookup interface {
@@ -81,6 +85,19 @@ func (s *RoomService) GetRoomByID(id uuid.UUID) (*models.Room, error) {
 
 func (s *RoomService) GetRoomsByHotelID(hotelID uuid.UUID) ([]models.Room, error) {
 	return s.repo.GetRoomsByHotelID(hotelID)
+}
+
+func (s *RoomService) GetAvailableRooms(hotelID uuid.UUID, checkInDate, checkOutDate time.Time, guests int) ([]models.Room, error) {
+	if hotelID == uuid.Nil {
+		return nil, ErrRoomHotelRequired
+	}
+	if !checkOutDate.After(checkInDate) {
+		return nil, ErrAvailabilityDatesInvalid
+	}
+	if guests <= 0 {
+		return nil, ErrAvailabilityGuestsInvalid
+	}
+	return s.repo.GetAvailableRooms(hotelID, checkInDate, checkOutDate, guests)
 }
 
 func (s *RoomService) UpdateRoom(room *models.Room) (*models.Room, error) {

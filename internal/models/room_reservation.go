@@ -59,3 +59,7 @@ func (r *RoomReservation) Validate() error {
 		return ErrRoomReservationStatusInvalid
 	}
 }
+
+func (r *RoomReservation) Overlaps(checkInDate, checkOutDate time.Time) bool {
+	return r.Status == RoomReservationStatusActive && checkInDate.Before(r.CheckOutDate) && checkOutDate.After(r.CheckInDate)
+}
