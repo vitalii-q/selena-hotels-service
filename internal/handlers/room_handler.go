@@ -3,7 +3,9 @@ package handlers
 import (
 	"errors"
 	"net/http"
+	"strconv"
 	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gofrs/uuid"
@@ -19,6 +21,7 @@ type RoomService interface {
 	GetRoomsByHotelID(uuid.UUID) ([]models.Room, error)
 	UpdateRoom(*models.Room) (*models.Room, error)
 	DeleteRoom(uuid.UUID) error
+	GetAvailableRooms(uuid.UUID, time.Time, time.Time, int) ([]models.Room, error)
 }
 
 type RoomHandler struct{ service RoomService }
@@ -28,6 +31,7 @@ func NewRoomHandler(service RoomService) *RoomHandler { return &RoomHandler{serv
 func RegisterRoomRoutes(r *gin.RouterGroup, h *RoomHandler) {
 	r.POST("/hotels/:id/rooms", h.CreateRoom)
 	r.GET("/hotels/:id/rooms", h.GetRoomsByHotel)
+	r.GET("/rooms/available", h.GetAvailableRooms)
 	r.GET("/rooms/:roomId", h.GetRoom)
 	r.PATCH("/rooms/:roomId", h.UpdateRoom)
 	r.DELETE("/rooms/:roomId", h.DeleteRoom)
@@ -83,6 +87,47 @@ func (h *RoomHandler) GetRoomsByHotel(c *gin.Context) {
 		result = append(result, dto.MapRoom(&rooms[i]))
 	}
 	c.JSON(http.StatusOK, result)
+}
+
+func (h *RoomHandler) GetAvailableRooms(c *gin.Context) {
+	hotelID, err := uuid.FromString(c.Query("hotelId"))
+	if err != nil {
+		roomError(c, http.StatusBadRequest, "INVALID_UUID", "Invalid hotelId UUID")
+		return
+	}
+	checkInDate, checkOutDate, guests, ok := parseAvailabilityQuery(c)
+	if !ok {
+		return
+	}
+	rooms, err := h.service.GetAvailableRooms(hotelID, checkInDate, checkOutDate, guests)
+	if err != nil {
+		h.handleRoomError(c, err)
+		return
+	}
+	result := make([]dto.RoomResponse, 0, len(rooms))
+	for i := range rooms {
+		result = append(result, dto.MapRoom(&rooms[i]))
+	}
+	c.JSON(http.StatusOK, result)
+}
+
+func parseAvailabilityQuery(c *gin.Context) (time.Time, time.Time, int, bool) {
+	checkInDate, err := time.Parse("2006-01-02", c.Query("checkInDate"))
+	if err != nil {
+		roomError(c, http.StatusBadRequest, "INVALID_DATE", "checkInDate must use YYYY-MM-DD format")
+		return time.Time{}, time.Time{}, 0, false
+	}
+	checkOutDate, err := time.Parse("2006-01-02", c.Query("checkOutDate"))
+	if err != nil {
+		roomError(c, http.StatusBadRequest, "INVALID_DATE", "checkOutDate must use YYYY-MM-DD format")
+		return time.Time{}, time.Time{}, 0, false
+	}
+	guests, err := strconv.Atoi(c.Query("guests"))
+	if err != nil || guests <= 0 {
+		roomError(c, http.StatusBadRequest, "INVALID_GUESTS", "guests must be greater than zero")
+		return time.Time{}, time.Time{}, 0, false
+	}
+	return checkInDate, checkOutDate, guests, true
 }
 
 func (h *RoomHandler) GetRoom(c *gin.Context) {
@@ -157,6 +202,8 @@ func (h *RoomHandler) handleRoomError(c *gin.Context, err error) {
 	case errors.Is(err, gorm.ErrRecordNotFound), errors.Is(err, services.ErrRoomNotFound):
 		roomError(c, 404, "ROOM_NOT_FOUND", "Room not found")
 	case errors.Is(err, services.ErrRoomHotelRequired), errors.Is(err, services.ErrRoomNumberRequired), errors.Is(err, services.ErrRoomTypeRequired), errors.Is(err, services.ErrRoomCapacityInvalid), errors.Is(err, services.ErrRoomPricePerNightInvalid):
+		roomError(c, 400, "VALIDATION_ERROR", err.Error())
+	case errors.Is(err, services.ErrAvailabilityDatesInvalid), errors.Is(err, services.ErrAvailabilityGuestsInvalid):
 		roomError(c, 400, "VALIDATION_ERROR", err.Error())
 	default:
 		roomError(c, 500, "INTERNAL_ERROR", err.Error())

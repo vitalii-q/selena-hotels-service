@@ -4,6 +4,7 @@ import (
 	"github.com/gofrs/uuid"
 	"github.com/vitali-q/selena-hotels-service/internal/models"
 	"gorm.io/gorm"
+	"time"
 )
 
 type RoomRepository struct {
@@ -34,6 +35,19 @@ func (r *RoomRepository) GetRoomsByHotelID(hotelID uuid.UUID) ([]models.Room, er
 	}
 
 	return rooms, nil
+}
+
+func (r *RoomRepository) GetAvailableRooms(hotelID uuid.UUID, checkInDate, checkOutDate time.Time, guests int) ([]models.Room, error) {
+	var rooms []models.Room
+	occupiedRooms := r.db.Model(&models.RoomReservation{}).
+		Select("room_id").
+		Where("status = ?", models.RoomReservationStatusActive).
+		Where("check_in_date < ? AND check_out_date > ?", checkOutDate, checkInDate)
+
+	err := r.db.Where("hotel_id = ? AND active = ? AND capacity >= ?", hotelID, true, guests).
+		Where("id NOT IN (?)", occupiedRooms).
+		Order("number ASC").Find(&rooms).Error
+	return rooms, err
 }
 
 func (r *RoomRepository) UpdateRoom(room *models.Room) error {
