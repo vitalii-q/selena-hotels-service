@@ -44,6 +44,7 @@ func SetupRouter(deps *bootstrap.Dependencies) *gin.Engine {
 	handlers.RegisterHotelRoutes(api, deps.HotelHandler)
 	handlers.RegisterLocationRoutes(api, deps.LocationHandler)
 	handlers.RegisterRoomRoutes(api, deps.RoomHandler)
+	handlers.RegisterRoomReservationRoutes(r, deps.RoomReservationHandler)
 
 	return r
 }

@@ -13,11 +13,12 @@ import (
 )
 
 type Dependencies struct {
-	DB              *gorm.DB
-	Env             *config.Env
-	HotelHandler    *handlers.HotelHandler
-	LocationHandler *handlers.LocationHandler
-	RoomHandler     *handlers.RoomHandler
+	DB                     *gorm.DB
+	Env                    *config.Env
+	HotelHandler           *handlers.HotelHandler
+	LocationHandler        *handlers.LocationHandler
+	RoomHandler            *handlers.RoomHandler
+	RoomReservationHandler *handlers.RoomReservationHandler
 }
 
 func Init() (*Dependencies, error) {
@@ -35,22 +36,26 @@ func Init() (*Dependencies, error) {
 	// --- Repositories ---
 	hotelRepo := repository.NewHotelRepository(db)
 	roomRepo := repository.NewRoomRepository(db)
+	roomReservationRepo := repository.NewRoomReservationRepository(db)
 
 	// --- Services ---
 	hotelService := services.NewHotelService(hotelRepo)
 	roomService := services.NewRoomService(roomRepo, hotelRepo, roomRepo)
+	roomReservationService := services.NewRoomReservationService(roomReservationRepo)
 	locationService := services.NewLocationService(db)
 
 	// --- Handlers ---
 	hotelHandler := handlers.NewHotelHandler(hotelService)
 	locationHandler := handlers.NewLocationHandler(locationService)
 	roomHandler := handlers.NewRoomHandler(roomService)
+	roomReservationHandler := handlers.NewRoomReservationHandler(roomReservationService)
 
 	return &Dependencies{
-		DB:              db,
-		Env:             env,
-		HotelHandler:    hotelHandler,
-		LocationHandler: locationHandler,
-		RoomHandler:     roomHandler,
+		DB:                     db,
+		Env:                    env,
+		HotelHandler:           hotelHandler,
+		LocationHandler:        locationHandler,
+		RoomHandler:            roomHandler,
+		RoomReservationHandler: roomReservationHandler,
 	}, nil
 }
