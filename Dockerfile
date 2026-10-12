@@ -7,8 +7,7 @@
 # -v $(pwd):/app — mount the local sources into the container
 
 # --- Start DB for microservice
-# docker run -d --name hotels-db -p 9264:26258 -p 8080:8080 -v $(pwd)/_docker/hotels-db-data:/cockroach/cockroach-data -v $(pwd)/secure/certs:/certs --network selena-dev_app_network cockroachdb/cockroach:v22.2.7 start-single-node --certs-dir=/certs --http-addr=0.0.0.0:8080 --sql-addr=0.0.0.0:26258
-
+# docker run -d --name hotels-db -p 9264:26258 -p 8080:8080 -v $(pwd)/_docker/hotels-db-data:/cockroach/cockroach-data -v $(pwd)/secure/certs:/certs --network selena-dev_app_network cockroachdb/cockroach:v22.2.7 start-single-node --certs-dir=/certs --advertise-addr=hotels-db:26257 --sql-addr=0.0.0.0:26258 --advertise-sql-addr=hotels-db:26258 --http-addr=0.0.0.0:8080
 # The sequence of launching microservices: hotels-service -> users-service -> bookings-service
 
 

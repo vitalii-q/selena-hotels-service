@@ -26,6 +26,13 @@ func (s *reservationServiceStub) CreateReservation(roomID uuid.UUID, bookingID i
 	return s.reservation, s.existed, nil
 }
 
+func (s *reservationServiceStub) ReleaseReservation(bookingID int64) (*models.RoomReservation, error) {
+	if s.err != nil {
+		return nil, s.err
+	}
+	return s.reservation, nil
+}
+
 func TestRoomReservationHandlerCreate(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	reservationID := uuid.Must(uuid.NewV4())
@@ -56,4 +63,20 @@ func TestRoomReservationHandlerConflict(t *testing.T) {
 
 	require.Equal(t, 409, response.Code)
 	require.Contains(t, response.Body.String(), "ROOM_NOT_AVAILABLE")
+}
+
+func TestRoomReservationHandlerRelease(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	reservationID := uuid.Must(uuid.NewV4())
+	service := &reservationServiceStub{reservation: &models.RoomReservation{ID: reservationID, Status: models.RoomReservationStatusReleased}}
+	r := gin.New()
+	RegisterRoomReservationRoutes(r, NewRoomReservationHandler(service))
+
+	request := httptest.NewRequest("POST", "/internal/reservations/42/release", nil)
+	response := httptest.NewRecorder()
+	r.ServeHTTP(response, request)
+
+	require.Equal(t, 200, response.Code)
+	require.Contains(t, response.Body.String(), reservationID.String())
+	require.Contains(t, response.Body.String(), models.RoomReservationStatusReleased)
 }

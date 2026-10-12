@@ -3,6 +3,7 @@ package handlers
 import (
 	"errors"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -14,6 +15,7 @@ import (
 
 type RoomReservationService interface {
 	CreateReservation(uuid.UUID, int64, time.Time, time.Time, *time.Time) (*models.RoomReservation, bool, error)
+	ReleaseReservation(int64) (*models.RoomReservation, error)
 }
 
 type RoomReservationHandler struct {
@@ -26,6 +28,7 @@ func NewRoomReservationHandler(service RoomReservationService) *RoomReservationH
 
 func RegisterRoomReservationRoutes(r *gin.Engine, h *RoomReservationHandler) {
 	r.POST("/internal/rooms/:roomId/reservations", h.CreateReservation)
+	r.POST("/internal/reservations/:bookingId/release", h.ReleaseReservation)
 }
 
 type createRoomReservationRequest struct {
@@ -80,10 +83,26 @@ func (h *RoomReservationHandler) CreateReservation(c *gin.Context) {
 	c.JSON(status, roomReservationResponse{ReservationID: reservation.ID, Status: reservation.Status})
 }
 
+func (h *RoomReservationHandler) ReleaseReservation(c *gin.Context) {
+	bookingID, err := strconv.ParseInt(c.Param("bookingId"), 10, 64)
+	if err != nil || bookingID <= 0 {
+		roomError(c, http.StatusBadRequest, "VALIDATION_ERROR", services.ErrReservationBookingRequired.Error())
+		return
+	}
+	reservation, err := h.service.ReleaseReservation(bookingID)
+	if err != nil {
+		h.handleReservationError(c, err)
+		return
+	}
+	c.JSON(http.StatusOK, roomReservationResponse{ReservationID: reservation.ID, Status: reservation.Status})
+}
+
 func (h *RoomReservationHandler) handleReservationError(c *gin.Context, err error) {
 	switch {
 	case errors.Is(err, services.ErrReservationNotAvailable):
 		roomError(c, http.StatusConflict, "ROOM_NOT_AVAILABLE", err.Error())
+	case errors.Is(err, services.ErrReservationNotFound):
+		roomError(c, http.StatusNotFound, "RESERVATION_NOT_FOUND", err.Error())
 	case errors.Is(err, gorm.ErrRecordNotFound):
 		roomError(c, http.StatusNotFound, "ROOM_NOT_FOUND", "Room not found")
 	case errors.Is(err, services.ErrReservationRoomRequired), errors.Is(err, services.ErrReservationBookingRequired), errors.Is(err, services.ErrReservationDatesInvalid):

@@ -7,6 +7,7 @@ import (
 	"github.com/gofrs/uuid"
 	"github.com/vitali-q/selena-hotels-service/internal/models"
 	"github.com/vitali-q/selena-hotels-service/internal/repository"
+	"gorm.io/gorm"
 )
 
 var (
@@ -14,6 +15,7 @@ var (
 	ErrReservationRoomRequired    = errors.New("room ID is required")
 	ErrReservationDatesInvalid    = errors.New("check-out date must be after check-in date")
 	ErrReservationNotAvailable    = repository.ErrRoomReservationConflict
+	ErrReservationNotFound        = errors.New("reservation not found")
 )
 
 type RoomReservationService struct {
@@ -41,4 +43,15 @@ func (s *RoomReservationService) CreateReservation(roomID uuid.UUID, bookingID i
 		ExpiresAt: expiresAt,
 	}
 	return s.repository.CreateReservation(reservation)
+}
+
+func (s *RoomReservationService) ReleaseReservation(bookingID int64) (*models.RoomReservation, error) {
+	if bookingID <= 0 {
+		return nil, ErrReservationBookingRequired
+	}
+	reservation, err := s.repository.ReleaseByBookingID(bookingID)
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, ErrReservationNotFound
+	}
+	return reservation, err
 }
