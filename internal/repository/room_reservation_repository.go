@@ -52,6 +52,41 @@ func (r *RoomReservationRepository) findByBookingID(bookingID int64) (*models.Ro
 	return &reservation, nil
 }
 
+func (r *RoomReservationRepository) ReleaseByBookingID(bookingID int64) (*models.RoomReservation, error) {
+	const maxRetries = 3
+	for attempt := 0; attempt < maxRetries; attempt++ {
+		reservation, err := r.releaseByBookingIDOnce(bookingID)
+		if err == nil {
+			return reservation, nil
+		}
+		if !isSerializationError(err) || attempt == maxRetries-1 {
+			return nil, err
+		}
+		time.Sleep(time.Duration(attempt+1) * 25 * time.Millisecond)
+	}
+	return nil, fmt.Errorf("reservation release retry limit exceeded")
+}
+
+func (r *RoomReservationRepository) releaseByBookingIDOnce(bookingID int64) (*models.RoomReservation, error) {
+	var result models.RoomReservation
+	err := r.db.Transaction(func(tx *gorm.DB) error {
+		if err := tx.Clauses(clause.Locking{Strength: "UPDATE"}).
+			Where("booking_id = ?", bookingID).
+			Order("created_at DESC").First(&result).Error; err != nil {
+			return err
+		}
+		if result.Status != models.RoomReservationStatusActive {
+			return nil
+		}
+		result.Status = models.RoomReservationStatusReleased
+		return tx.Save(&result).Error
+	})
+	if err != nil {
+		return nil, err
+	}
+	return &result, nil
+}
+
 func (r *RoomReservationRepository) createReservationOnce(reservation *models.RoomReservation) (*models.RoomReservation, bool, error) {
 	var result *models.RoomReservation
 	existing := false
