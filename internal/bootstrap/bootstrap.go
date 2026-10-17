@@ -13,12 +13,13 @@ import (
 )
 
 type Dependencies struct {
-	DB                     *gorm.DB
-	Env                    *config.Env
-	HotelHandler           *handlers.HotelHandler
-	LocationHandler        *handlers.LocationHandler
-	RoomHandler            *handlers.RoomHandler
-	RoomReservationHandler *handlers.RoomReservationHandler
+	DB                      *gorm.DB
+	Env                     *config.Env
+	HotelHandler            *handlers.HotelHandler
+	LocationHandler         *handlers.LocationHandler
+	RoomHandler             *handlers.RoomHandler
+	RoomReservationHandler  *handlers.RoomReservationHandler
+	ReservationExpiryWorker *services.ReservationExpiryWorker
 }
 
 func Init() (*Dependencies, error) {
@@ -42,6 +43,7 @@ func Init() (*Dependencies, error) {
 	hotelService := services.NewHotelService(hotelRepo)
 	roomService := services.NewRoomService(roomRepo, hotelRepo, roomRepo)
 	roomReservationService := services.NewRoomReservationService(roomReservationRepo)
+	reservationExpiryWorker := services.NewReservationExpiryWorker(roomReservationRepo, env.ReservationExpiryInterval)
 	locationService := services.NewLocationService(db)
 
 	// --- Handlers ---
@@ -51,11 +53,12 @@ func Init() (*Dependencies, error) {
 	roomReservationHandler := handlers.NewRoomReservationHandler(roomReservationService)
 
 	return &Dependencies{
-		DB:                     db,
-		Env:                    env,
-		HotelHandler:           hotelHandler,
-		LocationHandler:        locationHandler,
-		RoomHandler:            roomHandler,
-		RoomReservationHandler: roomReservationHandler,
+		DB:                      db,
+		Env:                     env,
+		HotelHandler:            hotelHandler,
+		LocationHandler:         locationHandler,
+		RoomHandler:             roomHandler,
+		RoomReservationHandler:  roomReservationHandler,
+		ReservationExpiryWorker: reservationExpiryWorker,
 	}, nil
 }
