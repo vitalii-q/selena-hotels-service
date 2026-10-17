@@ -18,6 +18,13 @@ type RoomReservationRepository struct {
 	db *gorm.DB
 }
 
+func (r *RoomReservationRepository) ExpireReservations(now time.Time) (int64, error) {
+	result := r.db.Model(&models.RoomReservation{}).
+		Where("status = ? AND expires_at IS NOT NULL AND expires_at <= ?", models.RoomReservationStatusActive, now).
+		UpdateColumn("status", models.RoomReservationStatusExpired)
+	return result.RowsAffected, result.Error
+}
+
 func NewRoomReservationRepository(db *gorm.DB) *RoomReservationRepository {
 	return &RoomReservationRepository{db: db}
 }
